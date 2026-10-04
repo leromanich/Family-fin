@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="fr" class="h-full bg-slate-50">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>FamilyFinTracker</title>
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#4f46e5">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="FamilyFin">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="https://unpkg.com/dexie@4/dist/dexie.min.js"></script>
+</head>
+<body class="h-full text-slate-800 antialiased">
+  <div id="root" class="h-full"></div>
+
+  <script src="./db.js"></script>
+  <script src="./sync.js"></script>
+  <script src="./lock.js"></script>
+
+  <script type="text/babel">
+    const { useState, useEffect } = React;
+
+    // ============= CONFIGURATION SUPABASE =============
+    // ⚠️ REMPLACE ces 2 valeurs par celles de ton projet Supabase
+    const SUPABASE_URL = "https://qolcqpvnxufdjojscncq.supabase.co";
+    const SUPABASE_ANON_KEY = "COLLE_TA_CLE_ANON_ICI";
+
+    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    // ============= ECRAN PIN - CREATION =============
+    function SetupPIN({ onComplete }) {
+      const [step, setStep] = useState(1);
+      const [pin1, setPin1] = useState('');
+      const [pin2, setPin2] = useState('');
+      const [error, setError] = useState('');
+      const current = step === 1 ? pin1 : pin2;
+      const setCurrent = step === 1 ? setPin1 : setPin2;
+
+      const handleDigit = (d) => { setError(''); if (current.length < 6) setCurrent(current + d); };
+      const handleDelete = () => setCurrent(current.slice(0, -1));
+
+      const handleNext = async () => {
+        if (step === 1) {
+          if (pin1.length < 4) { setError('4 chiffres minimum'); return; }
+          setStep(2);
+        } else {
+          if (pin2 !== pin1) { setError('Les codes ne correspondent pas'); setPin2(''); setStep(1); setPin1(''); return; }
+          await setupPIN(pin1);
+          onComplete();
+        }
+      };
+
+      return (
+        <div class="fixed inset-0 bg-indigo-600 flex flex-col items-center justify-center px-6 z-50">
+          <div class="w-16 h-16 rounded-2xl bg-white/20 flex items-center justify-center text-white text-2xl mb-6">🔐</div>
+          <h2 class="text-white font-bold text-lg mb-2 text-center">
+            {step === 1 ? 'Choisissez votre code secret' : 'Confirmez votre code'}
+          </h2>
+          <p class="text-indigo-200 text-xs mb-8 text-center max-w-xs">
+            Ce code protège vos données même si votre téléphone est perdu.
+          </p>
+          <div class="flex gap-3 mb-8">
+            {[0,1,2,3,4,5].map(i => (
+              <div key={i} class={`w-3.5 h-3.5 rounded-full ${i < current.length ? 'bg-white scale-110' : 'bg-white/30'}`} />
+            ))}
+          </div>
+          {error && <div class="text-rose-200 text-xs mb-4">{error}</div>}
+          <div class="grid grid-cols-3 gap-3 w-full max-w-xs">
+            {[1,2,3,4,5,6,7,8,9].map(n => (
+              <button key={n} type="button" onClick={() => handleDigit(String(n))}
+                class="aspect-square bg-white/10 text-white text-2xl font-bold rounded-2xl">{n}</button>
+            ))}
+            <div></div>
+            <button type="button" onClick={() => handleDigit('0')}
+              class="aspect-square bg-white/10 text-white text-2xl font-bold rounded-2xl">0</button>
+            <button type="button" onClick={handleDelete}
+              class="aspect-square bg-white/10 text-white text-xl rounded-2xl">⌫</button>
+          </div>
+          <button onClick={handleNext}
+            class="mt-8 bg-white text-indigo-600 font-bold px-8 py-3 rounded-2xl">
+            {step === 1 ? 'Suivant' : 'Terminer'}
+          </button>
+        </div>
+      );
+    }
+
+    // ============= ECRAN PIN - VERROUILLAGE =============
+    function LockScreen({ onUnlock }) {
+      const [pin, setPin] = useState('');
+      const [error, setError] = useState('');
+      const [attempts, setAttempts] = useState(0);
+
+      const handleDigit = (d) => { setError(''); if (pin.length < 6) setPin(pin + d); };
+      const handleDelete = () => setPin(pin.slice(0, -1));
+
+      const handleValidate = async () => {
+        if (pin.length < 4) { setError('4 chiffres minimum'); return; }
+        const ok = await verifyPIN(pin);
+        if (ok) { setPin(''); setAttempts(0); onUnlock(); }
+        else {
+          const newAttempts = attempts + 1;
+          setAttempts(newAttempts);
+          setPin('');
+          setError(`Code incorrect (${newAttempts})`);
+          if (newAttempts >= 3) {
+            const delay = Math.min(2000 * (newAttempts - 2), 10000);
+            await new Promise(r => setTimeout(r, delay));
+          }
+        }
+      };
+
+      return (
+        <div class="fixed inset-0 bg-indigo-600 flex flex-col items-center justify-center px-6 z-50">
+          <div class="w-16 h-16 rounded-2xl bg-white/20 flex items-center justify-center text-white text-2xl mb-6">🔒</div>
+          <h2 class="text-white font-bold text-xl mb-2">FamilyFinTracker</h2>
+          <p class="text-indigo-200 text-sm mb-8">Entrez votre code</p>
+          <div class="flex gap-3 mb-8">
+            {[0,1,2,3,4,5].map(i => (
+              <div key={i} class={`w-3.5 h-3.5 rounded-full ${i < pin.length ? 'bg-white scale-110' : 'bg-white/30'}`} />
+            ))}
+          </div>
+          {error && <div class="text-rose-200 text-xs mb-4 font-medium">{error}</div>}
+          <div class="grid grid-cols-3 gap-3 w-full max-w-xs">
+            {[1,2,3,4,5,6,7,8,9].map(n => (
+              <button key={n} type="button" onClick={() => handleDigit(String(n))}
+                class="aspect-square bg-white/10 text-white text-2xl font-bold rounded-2xl">{n}</button>
+            ))}
+            <div></div>
+            <button type="button" onClick={() => handleDigit('0')}
+              class="aspect-square bg-white/10 text-white text-2xl font-bold rounded-2xl">0</button>
+            <button type="button" onClick={handleDelete}
+              class="aspect-square bg-white/10 text-white text-xl rounded-2xl">⌫</button>
+          </div>
+          <button onClick={handleValidate}
+            class="mt-8 bg-white text-indigo-600 font-bold px-8 py-3 rounded-2xl">Déverrouiller</button>
+        </div>
+      );
+    }
