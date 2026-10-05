@@ -1,546 +1,571 @@
 <!DOCTYPE html>
-<html lang="fr" class="h-full bg-slate-50">
+<html lang="fr">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>FamilyFinTracker</title>
-  <link rel="manifest" href="manifest.json">
-  <meta name="theme-color" content="#4f46e5">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-title" content="FamilyFin">
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
-  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
-  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="https://unpkg.com/dexie@4/dist/dexie.min.js"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
+<title>FamilyFinTracker</title>
+<meta name="theme-color" content="#4f46e5">
+<link rel="manifest" href="manifest.json">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+body{font-family:-apple-system,BlinkMacSystemFont,sans-serif;background:#f8fafc;color:#1e293b;font-size:15px}
+#app{max-width:420px;margin:0 auto;min-height:100vh;background:#fff;box-shadow:0 0 20px rgba(0,0,0,.05)}
+.hidden{display:none!important}
+.btn{background:#4f46e5;color:#fff;border:none;padding:14px;border-radius:12px;font-size:15px;font-weight:600;width:100%;cursor:pointer}
+.btn:active{background:#4338ca}
+.btn.secondary{background:#f1f5f9;color:#475569}
+.btn.small{width:auto;padding:8px 14px;font-size:13px}
+.btn.green{background:#10b981}
+.btn.red{background:#ef4444}
+input,select{width:100%;padding:14px;border:1px solid #e2e8f0;border-radius:12px;font-size:15px;background:#fff;font-family:inherit}
+input:focus,select:focus{outline:2px solid #4f46e5;border-color:transparent}
+label{display:block;font-size:12px;font-weight:600;color:#64748b;text-transform:uppercase;margin-bottom:6px}
+.field{margin-bottom:14px}
+header{background:#4f46e5;color:#fff;padding:20px;border-radius:0 0 24px 24px}
+.header-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:16px}
+.email{font-size:12px;opacity:.8}
+.badge{font-size:10px;font-weight:800;padding:3px 8px;border-radius:20px;text-transform:uppercase;letter-spacing:.5px}
+.badge.admin{background:#fbbf24;color:#78350f}
+.badge.member{background:rgba(255,255,255,.2);color:#fff}
+.balance-box{background:rgba(255,255,255,.15);padding:16px;border-radius:16px;border:1px solid rgba(255,255,255,.2)}
+.balance-label{font-size:11px;text-transform:uppercase;letter-spacing:.5px;opacity:.85}
+.balance-amount{font-size:30px;font-weight:800;margin-top:4px}
+.tabs{display:flex;background:#f1f5f9;margin:-14px 16px 0;padding:4px;border-radius:12px;position:relative;z-index:1}
+.tab{flex:1;padding:10px;font-size:13px;font-weight:600;border:none;background:transparent;color:#64748b;border-radius:8px;cursor:pointer}
+.tab.active{background:#fff;color:#4f46e5;box-shadow:0 1px 3px rgba(0,0,0,.08)}
+main{padding:20px 16px 100px}
+.op{display:flex;align-items:center;gap:12px;padding:14px;background:#f8fafc;border-radius:14px;margin-bottom:10px;border:1px solid #f1f5f9}
+.op-icon{width:40px;height:40px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:18px;flex-shrink:0}
+.op-icon.deposit{background:#dcfce7;color:#16a34a}
+.op-icon.expense{background:#fee2e2;color:#dc2626}
+.op-info{flex:1;min-width:0}
+.op-desc{font-weight:600;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.op-date{font-size:11px;color:#94a3b8;margin-top:2px}
+.op-amount{font-weight:700;font-size:15px;white-space:nowrap}
+.op-amount.deposit{color:#16a34a}
+.title{font-weight:700;font-size:14px;color:#334155;margin-bottom:12px}
+.title-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+.empty{text-align:center;padding:40px 20px;border:2px dashed #e2e8f0;border-radius:14px;color:#94a3b8;font-size:13px}
+.auth-wrap{padding:40px 24px;min-height:100vh;display:flex;flex-direction:column;justify-content:center}
+.logo{width:64px;height:64px;background:#4f46e5;color:#fff;border-radius:16px;display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:900;margin:0 auto 16px}
+h1{font-size:24px;text-align:center;margin-bottom:4px}
+.subtitle{text-align:center;color:#94a3b8;font-size:13px;margin-bottom:32px}
+.error{background:#fef2f2;color:#dc2626;padding:12px;border-radius:10px;font-size:13px;margin-bottom:16px}
+.link-btn{background:none;border:none;color:#4f46e5;font-size:13px;font-weight:600;cursor:pointer;padding:8px;width:100%}
+.pin-screen{position:fixed;inset:0;background:#4f46e5;color:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px;z-index:100}
+.pin-dots{display:flex;gap:12px;margin:24px 0}
+.pin-dot{width:14px;height:14px;border-radius:50%;background:rgba(255,255,255,.3);transition:all .2s}
+.pin-dot.active{background:#fff;transform:scale(1.15)}
+.pin-pad{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;width:100%;max-width:280px}
+.pin-key{aspect-ratio:1;background:rgba(255,255,255,.1);border:none;color:#fff;font-size:22px;font-weight:700;border-radius:16px;cursor:pointer}
+.pin-key:active{background:rgba(255,255,255,.25)}
+.pin-key.empty{background:transparent;pointer-events:none}
+.pin-title{font-size:18px;font-weight:700;text-align:center;margin-bottom:8px}
+.pin-sub{font-size:13px;opacity:.7;text-align:center;margin-bottom:8px;max-width:280px}
+.modal{position:fixed;inset:0;background:rgba(15,23,42,.4);backdrop-filter:blur(4px);z-index:50;display:flex;align-items:flex-end;justify-content:center}
+.modal-content{background:#fff;width:100%;max-width:420px;border-radius:24px 24px 0 0;padding:24px;max-height:90vh;overflow-y:auto}
+.modal-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px}
+.close-btn{background:none;border:none;font-size:24px;cursor:pointer;color:#94a3b8;padding:4px}
+.type-toggle{display:grid;grid-template-columns:1fr 1fr;gap:6px;background:#f1f5f9;padding:4px;border-radius:12px;margin-bottom:16px}
+.type-btn{padding:10px;font-size:13px;font-weight:700;border:none;background:transparent;color:#64748b;border-radius:8px;cursor:pointer}
+.type-btn.active-expense{background:#ef4444;color:#fff}
+.type-btn.active-deposit{background:#10b981;color:#fff}
+.sync-bar{font-size:10px;opacity:.8;display:flex;align-items:center;gap:5px;margin-top:6px}
+.sync-dot{width:8px;height:8px;border-radius:50%;background:#10b981}
+.sync-dot.offline{background:#94a3b8}
+.sync-dot.syncing{background:#fbbf24}
+.signout{background:none;border:none;color:rgba(255,255,255,.8);font-size:20px;cursor:pointer;padding:6px}
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#1e293b;color:#fff;padding:12px 20px;border-radius:12px;font-size:13px;z-index:200;opacity:0;transition:opacity .3s;pointer-events:none}
+.toast.show{opacity:1}
+</style>
 </head>
-<body class="h-full text-slate-800 antialiased">
-  <div id="root" class="h-full"></div>
+<body>
+<div id="app"></div>
+<div class="toast" id="toast"></div>
+<script>
+// ============================================================
+// CONFIGURATION SUPABASE
+// ============================================================
+const SUPABASE_URL = "https://oiuhotnsnradzabmdytk.supabase.co";
+const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9pdWhvdG5zbnJhZHphYm1keXRrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTExMTM3NDUsImV4cCI6MjEwNjY4OTc0NX0.JCjqwM2HAgiIVX9YwMN63PGzeA6Q9Tl8qsyou1Pke1I";
 
-  <script src="./db.js"></script>
-  <script src="./sync.js"></script>
-  <script src="./lock.js"></script>
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+const app = document.getElementById('app');
 
-  <script type="text/babel">
-    const { useState, useEffect } = React;
+// ============================================================
+// UTILITAIRES
+// ============================================================
+function toast(msg){
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'), 2200);
+}
+function uuid(){ return crypto.randomUUID ? crypto.randomUUID() : 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g,c=>{const r=Math.random()*16|0;const v=c==='x'?r:(r&0x3|0x8);return v.toString(16)}) }
+function fmt(n){ return Number(n).toFixed(2).replace('.',',') + ' €' }
+function today(){ return new Date().toISOString().slice(0,10) }
+function escHtml(s){ return String(s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])) }
 
-    // ============= CONFIGURATION SUPABASE =============
-    // ⚠️ REMPLACE ces 2 valeurs par celles de ton projet Supabase
-    const SUPABASE_URL = "https://oiuhotnsnradzabmdytk.supabase.co";
-    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9pdWhvdG5zbnJhZHphYm1keXRrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTExMTM3NDUsImV4cCI6MjEwNjY4OTc0NX0.JCjqwM2HAgiIVX9YwMN63PGzeA6Q9Tl8qsyou1Pke1I";
+// ============================================================
+// STOCKAGE LOCAL
+// ============================================================
+const store = {
+  get(key){ try { return JSON.parse(localStorage.getItem('fft_'+key)) } catch { return null } },
+  set(key,val){ localStorage.setItem('fft_'+key, JSON.stringify(val)) },
+  del(key){ localStorage.removeItem('fft_'+key) }
+};
 
-    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+// ============================================================
+// PIN (SHA-256 natif)
+// ============================================================
+async function sha256(txt){
+  const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(txt));
+  return btoa(String.fromCharCode(...new Uint8Array(buf)));
+}
+async function setPin(pin){ store.set('pin', await sha256('fft_salt_v1_'+pin)) }
+async function checkPin(pin){ return await sha256('fft_salt_v1_'+pin) === store.get('pin') }
+function hasPin(){ return !!store.get('pin') }
 
-    // ============= ECRAN PIN - CREATION =============
-    function SetupPIN({ onComplete }) {
-      const [step, setStep] = useState(1);
-      const [pin1, setPin1] = useState('');
-      const [pin2, setPin2] = useState('');
-      const [error, setError] = useState('');
-      const current = step === 1 ? pin1 : pin2;
-      const setCurrent = step === 1 ? setPin1 : setPin2;
+// ============================================================
+// CACHE OFFLINE DES OPÉRATIONS
+// ============================================================
+function cacheOps(ops){ store.set('ops', ops) }
+function getCachedOps(){ return store.get('ops') || [] }
+function cacheProfile(p){ store.set('profile', p) }
+function getCachedProfile(){ return store.get('profile') }
 
-      const handleDigit = (d) => { setError(''); if (current.length < 6) setCurrent(current + d); };
-      const handleDelete = () => setCurrent(current.slice(0, -1));
+// ============================================================
+// ÉTAT GLOBAL
+// ============================================================
+let session = null;
+let profile = null;
+let ops = [];
+let activeTab = 'user';
 
-      const handleNext = async () => {
-        if (step === 1) {
-          if (pin1.length < 4) { setError('4 chiffres minimum'); return; }
-          setStep(2);
-        } else {
-          if (pin2 !== pin1) { setError('Les codes ne correspondent pas'); setPin2(''); setStep(1); setPin1(''); return; }
-          await setupPIN(pin1);
-          onComplete();
-        }
-      };
-
-      return (
-        <div class="fixed inset-0 bg-indigo-600 flex flex-col items-center justify-center px-6 z-50">
-          <div class="w-16 h-16 rounded-2xl bg-white/20 flex items-center justify-center text-white text-2xl mb-6">🔐</div>
-          <h2 class="text-white font-bold text-lg mb-2 text-center">
-            {step === 1 ? 'Choisissez votre code secret' : 'Confirmez votre code'}
-          </h2>
-          <p class="text-indigo-200 text-xs mb-8 text-center max-w-xs">
-            Ce code protège vos données même si votre téléphone est perdu.
-          </p>
-          <div class="flex gap-3 mb-8">
-            {[0,1,2,3,4,5].map(i => (
-              <div key={i} class={`w-3.5 h-3.5 rounded-full ${i < current.length ? 'bg-white scale-110' : 'bg-white/30'}`} />
-            ))}
-          </div>
-          {error && <div class="text-rose-200 text-xs mb-4">{error}</div>}
-          <div class="grid grid-cols-3 gap-3 w-full max-w-xs">
-            {[1,2,3,4,5,6,7,8,9].map(n => (
-              <button key={n} type="button" onClick={() => handleDigit(String(n))}
-                class="aspect-square bg-white/10 text-white text-2xl font-bold rounded-2xl">{n}</button>
-            ))}
-            <div></div>
-            <button type="button" onClick={() => handleDigit('0')}
-              class="aspect-square bg-white/10 text-white text-2xl font-bold rounded-2xl">0</button>
-            <button type="button" onClick={handleDelete}
-              class="aspect-square bg-white/10 text-white text-xl rounded-2xl">⌫</button>
-          </div>
-          <button onClick={handleNext}
-            class="mt-8 bg-white text-indigo-600 font-bold px-8 py-3 rounded-2xl">
-            {step === 1 ? 'Suivant' : 'Terminer'}
-          </button>
-        </div>
-      );
-    }
-
-    // ============= ECRAN PIN - VERROUILLAGE =============
-    function LockScreen({ onUnlock }) {
-      const [pin, setPin] = useState('');
-      const [error, setError] = useState('');
-      const [attempts, setAttempts] = useState(0);
-
-      const handleDigit = (d) => { setError(''); if (pin.length < 6) setPin(pin + d); };
-      const handleDelete = () => setPin(pin.slice(0, -1));
-
-      const handleValidate = async () => {
-        if (pin.length < 4) { setError('4 chiffres minimum'); return; }
-        const ok = await verifyPIN(pin);
-        if (ok) { setPin(''); setAttempts(0); onUnlock(); }
-        else {
-          const newAttempts = attempts + 1;
-          setAttempts(newAttempts);
-          setPin('');
-          setError(`Code incorrect (${newAttempts})`);
-          if (newAttempts >= 3) {
-            const delay = Math.min(2000 * (newAttempts - 2), 10000);
-            await new Promise(r => setTimeout(r, delay));
-          }
-        }
-      };
-
-      return (
-        <div class="fixed inset-0 bg-indigo-600 flex flex-col items-center justify-center px-6 z-50">
-          <div class="w-16 h-16 rounded-2xl bg-white/20 flex items-center justify-center text-white text-2xl mb-6">🔒</div>
-          <h2 class="text-white font-bold text-xl mb-2">FamilyFinTracker</h2>
-          <p class="text-indigo-200 text-sm mb-8">Entrez votre code</p>
-          <div class="flex gap-3 mb-8">
-            {[0,1,2,3,4,5].map(i => (
-              <div key={i} class={`w-3.5 h-3.5 rounded-full ${i < pin.length ? 'bg-white scale-110' : 'bg-white/30'}`} />
-            ))}
-          </div>
-          {error && <div class="text-rose-200 text-xs mb-4 font-medium">{error}</div>}
-          <div class="grid grid-cols-3 gap-3 w-full max-w-xs">
-            {[1,2,3,4,5,6,7,8,9].map(n => (
-              <button key={n} type="button" onClick={() => handleDigit(String(n))}
-                class="aspect-square bg-white/10 text-white text-2xl font-bold rounded-2xl">{n}</button>
-            ))}
-            <div></div>
-            <button type="button" onClick={() => handleDigit('0')}
-              class="aspect-square bg-white/10 text-white text-2xl font-bold rounded-2xl">0</button>
-            <button type="button" onClick={handleDelete}
-              class="aspect-square bg-white/10 text-white text-xl rounded-2xl">⌫</button>
-          </div>
-          <button onClick={handleValidate}
-            class="mt-8 bg-white text-indigo-600 font-bold px-8 py-3 rounded-2xl">Déverrouiller</button>
-        </div>
-      );
-    }
-    
-    // ============= ECRAN AUTHENTIFICATION =============
-    function AuthScreen() {
-      const [isSignUp, setIsSignUp] = useState(false);
-      const [email, setEmail] = useState('');
-      const [password, setPassword] = useState('');
-      const [errorMsg, setErrorMsg] = useState('');
-      const [loading, setLoading] = useState(false);
-
-      const handleAuth = async (e) => {
-        e.preventDefault();
-        setErrorMsg('');
-        setLoading(true);
-        try {
-          if (isSignUp) {
-            const { error } = await supabase.auth.signUp({ email, password });
-            if (error) throw error;
-            alert("Inscription réussie ! Connectez-vous.");
-            setIsSignUp(false);
-          } else {
-            const { error } = await supabase.auth.signInWithPassword({ email, password });
-            if (error) throw error;
-          }
-        } catch (err) {
-          setErrorMsg(err.message);
-        } finally {
-          setLoading(false);
-        }
-      };
-
-      return (
-        <div class="flex-1 flex flex-col justify-center px-6 py-12">
-          <div class="text-center mb-8">
-            <div class="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-indigo-600 text-white font-black text-2xl mb-4">FT</div>
-            <h2 class="text-2xl font-bold text-slate-900">FamilyFinTracker</h2>
-            <p class="mt-1 text-sm text-slate-500">Gérez les finances familiales</p>
-          </div>
-          <div class="bg-slate-50 py-8 px-6 rounded-2xl border border-slate-100">
-            <form class="space-y-4" onSubmit={handleAuth}>
-              {errorMsg && <div class="p-3 text-xs bg-red-50 text-red-600 rounded-xl">{errorMsg}</div>}
-              <div>
-                <label class="block text-xs font-semibold text-slate-600 uppercase mb-1">Email</label>
-                <input type="email" required value={email} onChange={(e) => setEmail(e.target.value)}
-                  class="w-full px-4 py-3 rounded-xl border border-slate-200 text-sm" placeholder="famille@exemple.com" />
-              </div>
-              <div>
-                <label class="block text-xs font-semibold text-slate-600 uppercase mb-1">Mot de passe</label>
-                <input type="password" required value={password} onChange={(e) => setPassword(e.target.value)}
-                  class="w-full px-4 py-3 rounded-xl border border-slate-200 text-sm" placeholder="••••••••" />
-              </div>
-              <button type="submit" disabled={loading}
-                class="w-full py-3.5 bg-indigo-600 text-white font-semibold rounded-xl disabled:opacity-50 text-sm mt-2">
-                {loading ? 'Patientez...' : (isSignUp ? "S'inscrire" : "Se connecter")}
-              </button>
-            </form>
-            <div class="mt-6 text-center">
-              <button onClick={() => { setIsSignUp(!isSignUp); setErrorMsg(''); }}
-                class="text-xs text-indigo-600 font-medium">
-                {isSignUp ? "Déjà un compte ? Connectez-vous" : "Pas de compte ? Inscrivez-vous"}
-              </button>
-            </div>
-          </div>
-        </div>
-      );
-    }
-
-    // ============= INDICATEUR DE SYNC =============
-    function SyncIndicator() {
-      const [status, setStatus] = useState({ state: navigator.onLine ? 'ok' : 'offline' });
-      useEffect(() => {
-        onSyncChange(setStatus);
-        const on = () => setStatus({ state: 'ok' });
-        const off = () => setStatus({ state: 'offline' });
-        window.addEventListener('online', on);
-        window.addEventListener('offline', off);
-        return () => { window.removeEventListener('online', on); window.removeEventListener('offline', off); };
-      }, []);
-      const colors = { ok: 'bg-emerald-400', syncing: 'bg-amber-400 animate-pulse', offline: 'bg-slate-400', error: 'bg-rose-500' };
-      const labels = { ok: 'En ligne', syncing: 'Sync…', offline: 'Hors ligne', error: 'Erreur' };
-      return (
-        <span class="flex items-center gap-1 text-[10px] font-semibold text-indigo-100">
-          <span class={`w-2 h-2 rounded-full ${colors[status.state] || 'bg-slate-400'}`}></span>
-          {labels[status.state] || 'Statut'}
-        </span>
-      );
-    }
-
-    // ============= DASHBOARD =============
-    function Dashboard({ session, profile }) {
-      const [activeTab, setActiveTab] = useState('user');
-      const [operations, setOperations] = useState([]);
-      const [groupData, setGroupData] = useState([]);
-      const [showModal, setShowModal] = useState(false);
-      const [loading, setLoading] = useState(true);
-
-      const fetchData = async () => {
-        setLoading(true);
-        if (activeTab === 'user') {
-          const localOps = await getMyOperations(session.user.id);
-          setOperations(localOps);
-          if (navigator.onLine) {
-            runSync(supabase, session.user.id).then(() => {
-              getMyOperations(session.user.id).then(setOperations);
-            });
-          }
-        } else if (activeTab === 'group' && profile?.role === 'admin') {
-          const profiles = await getProfilesLocal();
-          const ops = await getAllOperations();
-          const summary = profiles.map(p => {
-            const userOps = ops.filter(o => o.user_id === p.id);
-            const balance = userOps.reduce((acc, curr) =>
-              curr.type === 'deposit' ? acc + Number(curr.amount) : acc - Number(curr.amount), 0);
-            return { ...p, balance };
-          });
-          setGroupData(summary);
-          if (navigator.onLine) {
-            runSync(supabase, session.user.id).then(() => fetchData());
-          }
-        }
-        setLoading(false);
-      };
-
-      useEffect(() => { fetchData(); }, [activeTab]);
-
-      const calculateUserBalance = () =>
-        operations.reduce((acc, curr) =>
-          curr.type === 'deposit' ? acc + Number(curr.amount) : acc - Number(curr.amount), 0);
-
-      const handleSignOut = () => supabase.auth.signOut();
-
-      return (
-        <div class="flex flex-col h-full">
-          <header class="bg-indigo-600 text-white p-5 rounded-b-3xl shadow-lg">
-            <div class="flex justify-between items-center mb-4">
-              <div>
-                <h1 class="font-bold text-lg">FamilyFinTracker</h1>
-                <p class="text-xs text-indigo-200">{session.user.email}</p>
-                <SyncIndicator />
-              </div>
-              <div class="flex items-center gap-2">
-                <span class={`text-[10px] uppercase font-extrabold px-2 py-0.5 rounded-full ${profile?.role === 'admin' ? 'bg-amber-400 text-amber-950' : 'bg-indigo-500 text-white'}`}>
-                  {profile?.role || 'Membre'}
-                </span>
-                <button onClick={handleSignOut} class="p-1.5 text-indigo-200 rounded-lg">🚪</button>
-              </div>
-            </div>
-            {activeTab === 'user' && (
-              <div class="bg-indigo-700/50 rounded-2xl p-4 border border-indigo-500/30">
-                <span class="text-xs font-medium text-indigo-200 uppercase">Mon Solde</span>
-                <div class="text-3xl font-extrabold mt-1">
-                  {calculateUserBalance().toLocaleString('fr-FR', { minimumFractionDigits: 2 })} €
-                </div>
-              </div>
-            )}
-          </header>
-
-          {profile?.role === 'admin' && (
-            <div class="flex bg-slate-100 p-1 mx-5 mt-3 rounded-xl">
-              <button onClick={() => setActiveTab('user')}
-                class={`flex-1 py-2 text-xs font-semibold rounded-lg ${activeTab === 'user' ? 'bg-white text-indigo-600' : 'text-slate-500'}`}>
-                Mon Espace
-              </button>
-              <button onClick={() => setActiveTab('group')}
-                class={`flex-1 py-2 text-xs font-semibold rounded-lg ${activeTab === 'group' ? 'bg-white text-indigo-600' : 'text-slate-500'}`}>
-                Vue Groupe
-              </button>
-            </div>
-          )}
-
-          <main class="flex-1 px-5 pt-6 overflow-y-auto pb-24">
-            {loading ? (
-              <p class="text-center text-xs text-slate-400 py-8">Chargement...</p>
-            ) : activeTab === 'user' ? (
-              <div>
-                <div class="flex justify-between items-center mb-4">
-                  <h3 class="font-bold text-slate-800 text-sm">Opérations</h3>
-                  <button onClick={() => setShowModal(true)}
-                    class="bg-indigo-600 text-white text-xs font-semibold px-3 py-2 rounded-xl">+ Ajouter</button>
-                </div>
-                {operations.length === 0 ? (
-                  <div class="text-center py-10 border-2 border-dashed border-slate-200 rounded-2xl">
-                    <p class="text-xs text-slate-400">Aucune opération</p>
-                  </div>
-                ) : (
-                  <div class="space-y-3">
-                    {operations.map((op) => (
-                      <div key={op.id} class="flex items-center justify-between p-3.5 bg-slate-50 rounded-2xl border border-slate-100">
-                        <div class="flex items-center gap-3">
-                          <div class={`w-10 h-10 rounded-xl flex items-center justify-center font-bold ${op.type === 'deposit' ? 'bg-emerald-100 text-emerald-600' : 'bg-rose-100 text-rose-600'}`}>
-                            {op.type === 'deposit' ? '+' : '-'}
-                          </div>
-                          <div>
-                            <p class="font-semibold text-slate-800 text-sm">{op.description || (op.type === 'deposit' ? 'Dépôt' : 'Dépense')}</p>
-                            <p class="text-[10px] text-slate-400">{new Date(op.operation_date).toLocaleDateString('fr-FR')}</p>
-                          </div>
-                        </div>
-                        <span class={`font-bold text-sm ${op.type === 'deposit' ? 'text-emerald-600' : 'text-slate-800'}`}>
-                          {op.type === 'deposit' ? '+' : '-'}{Number(op.amount).toFixed(2)} €
-                        </span>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
-            ) : (
-              <div>
-                <h3 class="font-bold text-slate-800 text-sm mb-4">Membres de la famille</h3>
-                <div class="space-y-3">
-                  {groupData.map((member) => (
-                    <div key={member.id} class="p-4 bg-slate-50 rounded-2xl border border-slate-100 flex justify-between items-center">
-                      <div>
-                        <p class="font-bold text-slate-800 text-sm">{member.email}</p>
-                        <span class="text-[10px] uppercase font-extrabold px-2 py-0.5 rounded-md bg-slate-200 text-slate-600">{member.role}</span>
-                      </div>
-                      <span class={`font-bold text-base ${member.balance >= 0 ? 'text-emerald-600' : 'text-rose-600'}`}>
-                        {member.balance.toFixed(2)} €
-                      </span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-          </main>
-
-          {showModal && (
-            <AddOperationModal
-              userId={session.user.id}
-              onClose={() => setShowModal(false)}
-              onSuccess={() => { setShowModal(false); fetchData(); }}
-            />
-          )}
-        </div>
-      );
-    }
-
-    // ============= MODAL NOUVELLE OPERATION =============
-    function AddOperationModal({ userId, onClose, onSuccess }) {
-      const [type, setType] = useState('expense');
-      const [amount, setAmount] = useState('');
-      const [description, setDescription] = useState('');
-      const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
-      const [loading, setLoading] = useState(false);
-
-      const handleSubmit = async (e) => {
-        e.preventDefault();
-        if (!amount || Number(amount) <= 0) return;
-        setLoading(true);
-        const newOp = {
-          id: generateUUID(),
-          user_id: userId,
-          type,
-          amount: parseFloat(amount),
-          description: description || null,
-          operation_date: date,
-          created_at: new Date().toISOString()
-        };
-        await saveOperationLocal(newOp);
-        if (navigator.onLine) runSync(supabase, userId);
-        setLoading(false);
-        onSuccess();
-      };
-
-      return (
-        <div class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 flex items-end justify-center">
-          <div class="bg-white w-full max-w-md rounded-t-3xl p-6 shadow-2xl">
-            <div class="flex justify-between items-center mb-6">
-              <h3 class="font-bold text-slate-800 text-base">Nouvelle Opération</h3>
-              <button onClick={onClose} class="text-slate-400 font-bold p-1">✕</button>
-            </div>
-            <form onSubmit={handleSubmit} class="space-y-4">
-              <div class="grid grid-cols-2 gap-2 p-1 bg-slate-100 rounded-xl">
-                <button type="button" onClick={() => setType('expense')}
-                  class={`py-2.5 text-xs font-bold rounded-lg ${type === 'expense' ? 'bg-rose-500 text-white' : 'text-slate-500'}`}>Dépense</button>
-                <button type="button" onClick={() => setType('deposit')}
-                  class={`py-2.5 text-xs font-bold rounded-lg ${type === 'deposit' ? 'bg-emerald-500 text-white' : 'text-slate-500'}`}>Dépôt</button>
-              </div>
-              <div>
-                <label class="block text-xs font-semibold text-slate-600 uppercase mb-1">Montant (€)</label>
-                <input type="number" step="0.01" required value={amount}
-                  onChange={(e) => setAmount(e.target.value)}
-                  class="w-full px-4 py-3 rounded-xl border border-slate-200 text-lg font-bold" placeholder="0.00" />
-              </div>
-              <div>
-                <label class="block text-xs font-semibold text-slate-600 uppercase mb-1">Description</label>
-                <input type="text" value={description}
-                  onChange={(e) => setDescription(e.target.value)}
-                  class="w-full px-4 py-3 rounded-xl border border-slate-200 text-sm" placeholder="Courses, argent de poche..." />
-              </div>
-              <div>
-                <label class="block text-xs font-semibold text-slate-600 uppercase mb-1">Date</label>
-                <input type="date" required value={date}
-                  onChange={(e) => setDate(e.target.value)}
-                  class="w-full px-4 py-3 rounded-xl border border-slate-200 text-sm" />
-              </div>
-              <button type="submit" disabled={loading}
-                class="w-full py-3.5 bg-indigo-600 text-white font-bold rounded-xl disabled:opacity-50 text-sm mt-4">
-                {loading ? 'Enregistrement...' : 'Valider'}
-              </button>
-            </form>
-          </div>
-        </div>
-      );
-    }
-
-    // ============= APP PRINCIPAL =============
-    function App() {
-      const [session, setSession] = useState(null);
-      const [profile, setProfile] = useState(null);
-      const [loading, setLoading] = useState(true);
-      const [hasPinSet, setHasPinSet] = useState(null);
-      const [locked, setLocked] = useState(true);
-      const [needsPINSetup, setNeedsPINSetup] = useState(false);
-
-      useEffect(() => {
-        (async () => {
-          const exists = await hasPIN();
-          setHasPinSet(exists);
-          setLocked(exists);
-          setLoading(false);
-        })();
-        registerLockCallback(() => setLocked(true));
-        startAutoLockWatcher();
-      }, []);
-
-      useEffect(() => {
-        supabase.auth.getSession().then(({ data: { session } }) => {
-          setSession(session);
-          if (session) fetchProfile(session.user.id);
-        });
-        const { data: { subscription } } = supabase.auth.onAuthStateChange((_e, s) => {
-          setSession(s);
-          if (s) fetchProfile(s.user.id);
-          else setProfile(null);
-        });
-        return () => subscription.unsubscribe();
-      }, []);
-
-      useEffect(() => {
-        if (session?.user?.id && navigator.onLine) {
-          window.__runSync = () => runSync(supabase, session.user.id);
-          runSync(supabase, session.user.id);
-        }
-      }, [session]);
-
-      const fetchProfile = async (userId) => {
-        try {
-          const profiles = await getProfilesLocal();
-          const cached = profiles.find(p => p.id === userId);
-          if (cached) setProfile(cached);
-          if (navigator.onLine) {
-            const { data, error } = await supabase
-              .from('profiles').select('*').eq('id', userId).single();
-            if (!error && data) {
-              setProfile(data);
-              await saveProfilesLocal([data]);
-            }
-          }
-        } catch (e) { console.warn('Profil en cache uniquement'); }
-      };
-
-      if (loading) {
-        return (
-          <div class="flex h-full items-center justify-center">
-            <div class="h-10 w-10 animate-spin rounded-full border-4 border-indigo-600 border-t-transparent"></div>
-          </div>
-        );
+// ============================================================
+// RENDER : AUTH
+// ============================================================
+function renderAuth(){
+  const isSignUp = !!(window.__isSignUp);
+  app.innerHTML = `
+    <div class="auth-wrap">
+      <div class="logo">FT</div>
+      <h1>FamilyFinTracker</h1>
+      <p class="subtitle">Gestion des finances familiales</p>
+      <div id="auth-error"></div>
+      <form id="auth-form">
+        <div class="field"><label>Email</label><input type="email" id="email" required></div>
+        <div class="field"><label>Mot de passe</label><input type="password" id="password" required minlength="6"></div>
+        <button type="submit" class="btn">${isSignUp ? "S'inscrire" : "Se connecter"}</button>
+      </form>
+      <button class="link-btn" id="toggle-auth">${isSignUp ? "Déjà un compte ? Se connecter" : "Pas de compte ? S'inscrire"}</button>
+    </div>`;
+  document.getElementById('toggle-auth').onclick = ()=>{ window.__isSignUp = !isSignUp; renderAuth() };
+  document.getElementById('auth-form').onsubmit = async (e)=>{
+    e.preventDefault();
+    const email = document.getElementById('email').value.trim();
+    const password = document.getElementById('password').value;
+    const errEl = document.getElementById('auth-error');
+    errEl.innerHTML = '';
+    try {
+      if (isSignUp) {
+        const { error } = await sb.auth.signUp({ email, password });
+        if (error) throw error;
+        toast("Inscription réussie ! Connectez-vous.");
+        window.__isSignUp = false;
+        renderAuth();
+      } else {
+        const { error } = await sb.auth.signInWithPassword({ email, password });
+        if (error) throw error;
       }
-
-      if (hasPinSet && locked) {
-        return <LockScreen onUnlock={() => setLocked(false)} />;
-      }
-
-      if (!hasPinSet && session && !needsPINSetup) {
-        setNeedsPINSetup(true);
-        return <SetupPIN onComplete={() => {
-          setHasPinSet(true);
-          setNeedsPINSetup(false);
-          setLocked(false);
-        }} />;
-      }
-
-      return (
-        <div class="min-h-full flex flex-col max-w-md mx-auto bg-white shadow-xl relative">
-          {!session ? <AuthScreen /> : <Dashboard session={session} profile={profile} />}
-        </div>
-      );
+    } catch (err) {
+      errEl.innerHTML = `<div class="error">${escHtml(err.message)}</div>`;
     }
+  };
+}
 
-    // ============= RENDU =============
-    const root = ReactDOM.createRoot(document.getElementById('root'));
-    root.render(<App />);
+// ============================================================
+// RENDER : SETUP PIN
+// ============================================================
+let pinSetupStep = 1, pinSetup1 = '';
+function renderSetupPin(){
+  const current = pinSetupStep === 1 ? pinSetup1 : (window.__pinTmp || '');
+  app.innerHTML = `
+    <div class="pin-screen">
+      <div style="font-size:36px;margin-bottom:12px">🔐</div>
+      <div class="pin-title">${pinSetupStep === 1 ? 'Choisissez un code' : 'Confirmez le code'}</div>
+      <div class="pin-sub">Ce code protège vos données même si le téléphone est perdu. Il ne quitte jamais l'appareil.</div>
+      <div class="pin-dots" id="dots"></div>
+      <div class="pin-pad" id="pad"></div>
+      <button class="btn" id="pin-next" style="max-width:280px;margin-top:20px;background:#fff;color:#4f46e5">${pinSetupStep === 1 ? 'Suivant' : 'Terminer'}</button>
+    </div>`;
+  renderDots(current);
+  renderPad(current, (newVal)=>{
+    if (pinSetupStep === 1) pinSetup1 = newVal; else window.__pinTmp = newVal;
+    renderDots(newVal);
+    document.querySelectorAll('.pin-key:not(.empty)').forEach(()=>{});
+    // Update buttons by re-rendering only dots and pad
+    document.getElementById('dots').innerHTML = Array.from({length:6},(_,i)=>
+      `<div class="pin-dot ${i<newVal.length?'active':''}"></div>`).join('');
+    document.querySelectorAll('.pin-key').forEach(k=>k.onclick=null);
+    renderPadHandlers(newVal);
+  });
+  document.getElementById('pin-next').onclick = async ()=>{
+    if (pinSetupStep === 1) {
+      if (pinSetup1.length < 4) return toast('4 chiffres minimum');
+      pinSetupStep = 2;
+      window.__pinTmp = '';
+      renderSetupPin();
+    } else {
+      if (window.__pinTmp !== pinSetup1) {
+        toast('Les codes ne correspondent pas');
+        pinSetupStep = 1; pinSetup1 = ''; window.__pinTmp = '';
+        renderSetupPin();
+        return;
+      }
+      await setPin(pinSetup1);
+      pinSetupStep = 1; pinSetup1 = ''; window.__pinTmp = '';
+      renderDashboard();
+    }
+  };
+}
+function renderDots(val){
+  const d = document.getElementById('dots');
+  if (!d) return;
+  d.innerHTML = Array.from({length:6},(_,i)=>
+    `<div class="pin-dot ${i<val.length?'active':''}"></div>`).join('');
+}
+function renderPad(val, onDigit){
+  const pad = document.getElementById('pad');
+  if (!pad) return;
+  pad.innerHTML = '';
+  const keys = ['1','2','3','4','5','6','7','8','9','empty','0','del'];
+  keys.forEach(k=>{
+    const b = document.createElement('button');
+    b.className = 'pin-key' + (k==='empty'?' empty':'');
+    b.textContent = k==='del' ? '⌫' : (k==='empty' ? '' : k);
+    if (k !== 'empty') {
+      b.onclick = ()=>{
+        if (k === 'del') {
+          const nv = val.slice(0,-1);
+          if (pinSetupStep === 1) { pinSetup1 = nv; renderSetupPin(); }
+          else { window.__pinTmp = nv; renderSetupPin(); }
+        } else if (val.length < 6) {
+          const nv = val + k;
+          if (pinSetupStep === 1) pinSetup1 = nv; else window.__pinTmp = nv;
+          renderSetupPin();
+        }
+      };
+    }
+    pad.appendChild(b);
+  });
+}
+function renderPadHandlers(){/* no-op, géré dans renderPad */}
 
-    // ============= ENREGISTREMENT SERVICE WORKER =============
-    if ('serviceWorker' in navigator) {
-      window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw.js')
-          .then(reg => console.log('SW enregistré ✅'))
-          .catch(err => console.log('Erreur SW :', err));
+// ============================================================
+// RENDER : LOCK SCREEN
+// ============================================================
+let lockAttempts = 0, lockValue = '';
+function renderLock(){
+  app.innerHTML = `
+    <div class="pin-screen">
+      <div style="font-size:36px;margin-bottom:12px">🔒</div>
+      <div class="pin-title">FamilyFinTracker</div>
+      <div class="pin-sub">Entrez votre code</div>
+      <div class="pin-dots" id="dots"></div>
+      <div id="lock-error" style="color:#fecaca;font-size:13px;margin-bottom:12px;min-height:18px"></div>
+      <div class="pin-pad" id="pad"></div>
+    </div>`;
+  renderDots(lockValue);
+  const pad = document.getElementById('pad');
+  const keys = ['1','2','3','4','5','6','7','8','9','empty','0','del'];
+  keys.forEach(k=>{
+    const b = document.createElement('button');
+    b.className = 'pin-key' + (k==='empty'?' empty':'');
+    b.textContent = k==='del' ? '⌫' : (k==='empty'?'':k);
+    if (k !== 'empty') {
+      b.onclick = async ()=>{
+        if (k === 'del') { lockValue = lockValue.slice(0,-1); renderDots(lockValue); return }
+        if (lockValue.length >= 6) return;
+        lockValue += k;
+        renderDots(lockValue);
+        if (lockValue.length >= 4) {
+          const ok = await checkPin(lockValue);
+          if (ok) {
+            lockValue = ''; lockAttempts = 0;
+            renderDashboard();
+          } else if (lockValue.length === 6) {
+            lockAttempts++;
+            document.getElementById('lock-error').textContent = `Code incorrect (${lockAttempts})`;
+            lockValue = '';
+            renderDots(lockValue);
+          }
+        }
+      };
+    }
+    pad.appendChild(b);
+  });
+}
+
+// ============================================================
+// RENDER : DASHBOARD
+// ============================================================
+function renderDashboard(){
+  if (!session) return renderAuth();
+  const userEmail = session.user.email || '';
+  const role = profile?.role || 'member';
+  const isAdmin = role === 'admin';
+
+  const balance = ops.reduce((a,o)=> o.type === 'deposit' ? a + Number(o.amount) : a - Number(o.amount), 0);
+
+  app.innerHTML = `
+    <div id="dashboard-root">
+      <header>
+        <div class="header-top">
+          <div>
+            <div style="font-weight:700;font-size:16px">FamilyFinTracker</div>
+            <div class="email">${escHtml(userEmail)}</div>
+            <div class="sync-bar"><span class="sync-dot ${navigator.onLine?'':'offline'}" id="sync-dot"></span><span id="sync-text">${navigator.onLine?'En ligne':'Hors ligne'}</span></div>
+          </div>
+          <div style="display:flex;align-items:center;gap:8px">
+            <span class="badge ${isAdmin?'admin':'member'}">${isAdmin?'Admin':'Membre'}</span>
+            <button class="signout" id="signout">🚪</button>
+          </div>
+        </div>
+        <div id="balance-area"></div>
+      </header>
+      ${isAdmin ? `
+        <div class="tabs">
+          <button class="tab ${activeTab==='user'?'active':''}" data-tab="user">Mon espace</button>
+          <button class="tab ${activeTab==='group'?'active':''}" data-tab="group">Vue groupe</button>
+        </div>` : ''}
+      <main id="main-area"></main>
+    </div>`;
+
+  document.getElementById('signout').onclick = async ()=>{
+    await sb.auth.signOut();
+    session = null; profile = null;
+    store.del('profile');
+    renderAuth();
+  };
+  document.querySelectorAll('.tab').forEach(b=>{
+    b.onclick = ()=>{ activeTab = b.dataset.tab; renderDashboard() };
+  });
+
+  renderBalance(balance);
+  renderMain();
+
+  // Écoute online/offline
+  window.addEventListener('online', updateSyncStatus, {once:true});
+  window.addEventListener('offline', updateSyncStatus, {once:true});
+}
+function updateSyncStatus(){
+  const dot = document.getElementById('sync-dot');
+  const txt = document.getElementById('sync-text');
+  if (!dot) return;
+  if (navigator.onLine) { dot.classList.remove('offline'); txt.textContent = 'En ligne'; syncNow(); }
+  else { dot.classList.add('offline'); txt.textContent = 'Hors ligne'; }
+}
+function renderBalance(balance){
+  const area = document.getElementById('balance-area');
+  if (!area) return;
+  if (activeTab === 'user') {
+    area.innerHTML = `
+      <div class="balance-box">
+        <div class="balance-label">Mon solde</div>
+        <div class="balance-amount">${fmt(balance)}</div>
+      </div>`;
+  } else {
+    area.innerHTML = '';
+  }
+}
+function renderMain(){
+  const area = document.getElementById('main-area');
+  if (!area) return;
+  if (activeTab === 'user') {
+    if (ops.length === 0) {
+      area.innerHTML = `
+        <div class="title-row"><div class="title">Opérations</div><button class="btn small" id="new-op">+ Ajouter</button></div>
+        <div class="empty">Aucune opération</div>`;
+    } else {
+      area.innerHTML = `
+        <div class="title-row"><div class="title">Opérations</div><button class="btn small" id="new-op">+ Ajouter</button></div>
+        ${ops.slice().sort((a,b)=>(b.operation_date||'').localeCompare(a.operation_date||'')).map(o=>`
+          <div class="op">
+            <div class="op-icon ${o.type}">${o.type==='deposit'?'+':'-'}</div>
+            <div class="op-info">
+              <div class="op-desc">${escHtml(o.description || (o.type==='deposit'?'Dépôt':'Dépense'))}</div>
+              <div class="op-date">${o.operation_date || ''}</div>
+            </div>
+            <div class="op-amount ${o.type}">${o.type==='deposit'?'+':'-'}${fmt(o.amount)}</div>
+          </div>`).join('')}`;
+    }
+    document.getElementById('new-op').onclick = openNewOpModal;
+  } else {
+    // Vue groupe : calcule par profil (basique, sans cache)
+    area.innerHTML = `<div class="title">Membres</div><div class="empty">Chargement...</div>`;
+    loadGroupView();
+  }
+}
+
+async function loadGroupView(){
+  const area = document.getElementById('main-area');
+  if (!area) return;
+  try {
+    const { data: profiles } = await sb.from('profiles').select('*');
+    const { data: allOps } = await sb.from('operations').select('*');
+    if (!profiles || !allOps) throw new Error('Erreur');
+    const rows = profiles.map(p=>{
+      const uops = allOps.filter(o=>o.user_id === p.id);
+      const bal = uops.reduce((a,o)=> o.type==='deposit' ? a + Number(o.amount) : a - Number(o.amount), 0);
+      return {...p, balance: bal};
+    });
+    area.innerHTML = `<div class="title">Membres (${rows.length})</div>` + rows.map(m=>`
+      <div class="op">
+        <div class="op-icon deposit">${(m.email||'?')[0].toUpperCase()}</div>
+        <div class="op-info">
+          <div class="op-desc">${escHtml(m.email||m.id.slice(0,8))}</div>
+          <div class="op-date">${m.role}</div>
+        </div>
+        <div class="op-amount ${m.balance>=0?'deposit':'expense'}">${fmt(m.balance)}</div>
+      </div>`).join('');
+  } catch(e){
+    area.innerHTML = `<div class="empty">Erreur de chargement : ${escHtml(e.message)}</div>`;
+  }
+}
+
+// ============================================================
+// MODAL NOUVELLE OPÉRATION
+// ============================================================
+function openNewOpModal(){
+  let type = 'expense';
+  const modal = document.createElement('div');
+  modal.className = 'modal';
+  modal.innerHTML = `
+    <div class="modal-content">
+      <div class="modal-header">
+        <div class="title">Nouvelle opération</div>
+        <button class="close-btn" id="modal-close">✕</button>
+      </div>
+      <div class="type-toggle">
+        <button class="type-btn active-expense" id="type-expense">Dépense</button>
+        <button class="type-btn" id="type-deposit">Dépôt</button>
+      </div>
+      <div class="field"><label>Montant (€)</label><input type="number" step="0.01" id="op-amount" placeholder="0.00"></div>
+      <div class="field"><label>Description</label><input type="text" id="op-desc" placeholder="Courses, argent de poche..."></div>
+      <div class="field"><label>Date</label><input type="date" id="op-date" value="${today()}"></div>
+      <button class="btn" id="op-save" style="margin-top:8px">Valider</button>
+    </div>`;
+  document.body.appendChild(modal);
+
+  const btnExp = modal.querySelector('#type-expense');
+  const btnDep = modal.querySelector('#type-deposit');
+  btnExp.onclick = ()=>{ type='expense'; btnExp.classList.add('active-expense'); btnDep.classList.remove('active-deposit') };
+  btnDep.onclick = ()=>{ type='deposit'; btnDep.classList.add('active-deposit'); btnExp.classList.remove('active-expense') };
+
+  modal.querySelector('#modal-close').onclick = ()=> modal.remove();
+  modal.querySelector('#op-save').onclick = async ()=>{
+    const amount = parseFloat(modal.querySelector('#op-amount').value);
+    const description = modal.querySelector('#op-desc').value.trim();
+    const operation_date = modal.querySelector('#op-date').value;
+    if (!amount || amount <= 0) return toast('Montant invalide');
+    const newOp = {
+      id: uuid(),
+      user_id: session.user.id,
+      type, amount, description, operation_date
+    };
+    // Écriture locale immédiate
+    ops.push(newOp);
+    cacheOps(ops);
+    modal.remove();
+    renderDashboard();
+    toast('Enregistré');
+    // Sync cloud en arrière-plan
+    if (navigator.onLine) syncNow();
+  };
+}
+
+// ============================================================
+// SYNCHRONISATION
+// ============================================================
+async function syncNow(){
+  if (!session || !navigator.onLine) return;
+  const dot = document.getElementById('sync-dot');
+  const txt = document.getElementById('sync-text');
+  if (dot) { dot.classList.add('syncing'); dot.classList.remove('offline') }
+  if (txt) txt.textContent = 'Sync…';
+  try {
+    // Push : envoie toutes les opérations locales
+    for (const op of ops) {
+      await sb.from('operations').upsert({
+        id: op.id, user_id: op.user_id, type: op.type,
+        amount: op.amount, description: op.description || null,
+        operation_date: op.operation_date
       });
     }
-  </script>
+    // Pull : récupère toutes les opérations de l'utilisateur
+    const { data } = await sb.from('operations').select('*').eq('user_id', session.user.id);
+    if (data) { ops = data; cacheOps(ops) }
+    // Profil
+    const { data: prof } = await sb.from('profiles').select('*').eq('id', session.user.id).single();
+    if (prof) { profile = prof; cacheProfile(prof) }
+    if (txt) { txt.textContent = 'En ligne'; dot.classList.remove('syncing') }
+    if (activeTab === 'user') renderDashboard();
+  } catch(e){
+    console.warn('Sync error', e);
+    if (txt) txt.textContent = 'Erreur sync';
+    if (dot) { dot.classList.remove('syncing'); dot.classList.add('offline') }
+  }
+}
+
+// ============================================================
+// DÉMARRAGE
+// ============================================================
+async function boot(){
+  // Charge le cache local immédiatement
+  profile = getCachedProfile();
+  ops = getCachedOps();
+
+  // Vérifie la session
+  const { data: { session: s } } = await sb.auth.getSession();
+  session = s;
+
+  // Ordre de priorité : PIN > Auth > Dashboard
+  if (hasPin()) {
+    renderLock();
+  } else if (!session) {
+    renderAuth();
+  } else {
+    renderSetupPin();
+  }
+
+  // Écoute les changements de session
+  sb.auth.onAuthStateChange((_evt, s)=>{
+    session = s;
+    if (!s) {
+      profile = null;
+      store.del('profile');
+      if (hasPin()) renderLock(); else renderAuth();
+    } else {
+      // Charge le profil et sync
+      syncNow().then(()=>{
+        if (hasPin()) renderDashboard();
+      });
+    }
+  });
+
+  // Sync au démarrage si connecté
+  if (session) syncNow();
+}
+boot();
+
+// Enregistre le Service Worker si présent
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', ()=>{
+    navigator.serviceWorker.register('./sw.js').catch(()=>{});
+  });
+}
+</script>
 </body>
 </html>
