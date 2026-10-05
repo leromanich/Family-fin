@@ -103,7 +103,7 @@ function toast(msg){
   setTimeout(()=>t.classList.remove('show'), 2200);
 }
 function uuid(){ return crypto.randomUUID ? crypto.randomUUID() : 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g,c=>{const r=Math.random()*16|0;const v=c==='x'?r:(r&0x3|0x8);return v.toString(16)}) }
-function fmt(n){ return Number(n).toFixed(2).replace('.',',') + ' €' }
+function fmt(n){ return Math.round(Number(n)).toLocaleString('fr-FR') + ' FCFA' }
 function today(){ return new Date().toISOString().slice(0,10) }
 function escHtml(s){ return String(s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])) }
 
@@ -142,6 +142,7 @@ let session = null;
 let profile = null;
 let ops = [];
 let activeTab = 'user';
+let isLocked = false;
 
 // ============================================================
 // RENDER : AUTH
@@ -268,6 +269,7 @@ function renderPadHandlers(){/* no-op, géré dans renderPad */}
 // ============================================================
 let lockAttempts = 0, lockValue = '';
 function renderLock(){
+  isLocked = true;
   app.innerHTML = `
     <div class="pin-screen">
       <div style="font-size:36px;margin-bottom:12px">🔒</div>
@@ -293,8 +295,10 @@ function renderLock(){
         if (lockValue.length >= 4) {
           const ok = await checkPin(lockValue);
           if (ok) {
-            lockValue = ''; lockAttempts = 0;
-            renderDashboard();
+  lockValue = ''; lockAttempts = 0;
+  isLocked = false;
+  renderDashboard();
+}
           } else if (lockValue.length === 6) {
             lockAttempts++;
             document.getElementById('lock-error').textContent = `Code incorrect (${lockAttempts})`;
@@ -312,6 +316,7 @@ function renderLock(){
 // RENDER : DASHBOARD
 // ============================================================
 function renderDashboard(){
+  if (isLocked) return renderLock();
   if (!session) return renderAuth();
   const userEmail = session.user.email || '';
   const role = profile?.role || 'member';
