@@ -11,13 +11,10 @@
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 body{font-family:-apple-system,BlinkMacSystemFont,sans-serif;background:#f8fafc;color:#1e293b;font-size:15px}
 #app{max-width:420px;margin:0 auto;min-height:100vh;background:#fff;box-shadow:0 0 20px rgba(0,0,0,.05)}
-.hidden{display:none!important}
 .btn{background:#4f46e5;color:#fff;border:none;padding:14px;border-radius:12px;font-size:15px;font-weight:600;width:100%;cursor:pointer}
 .btn:active{background:#4338ca}
 .btn.secondary{background:#f1f5f9;color:#475569}
 .btn.small{width:auto;padding:8px 14px;font-size:13px}
-.btn.green{background:#10b981}
-.btn.red{background:#ef4444}
 input,select{width:100%;padding:14px;border:1px solid #e2e8f0;border-radius:12px;font-size:15px;background:#fff;font-family:inherit}
 input:focus,select:focus{outline:2px solid #4f46e5;border-color:transparent}
 label{display:block;font-size:12px;font-weight:600;color:#64748b;text-transform:uppercase;margin-bottom:6px}
@@ -25,11 +22,11 @@ label{display:block;font-size:12px;font-weight:600;color:#64748b;text-transform:
 header{background:#4f46e5;color:#fff;padding:20px;border-radius:0 0 24px 24px}
 .header-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:16px}
 .email{font-size:12px;opacity:.8}
-.badge{font-size:10px;font-weight:800;padding:3px 8px;border-radius:20px;text-transform:uppercase;letter-spacing:.5px}
+.badge{font-size:10px;font-weight:800;padding:3px 8px;border-radius:20px;text-transform:uppercase}
 .badge.admin{background:#fbbf24;color:#78350f}
 .badge.member{background:rgba(255,255,255,.2);color:#fff}
 .balance-box{background:rgba(255,255,255,.15);padding:16px;border-radius:16px;border:1px solid rgba(255,255,255,.2)}
-.balance-label{font-size:11px;text-transform:uppercase;letter-spacing:.5px;opacity:.85}
+.balance-label{font-size:11px;text-transform:uppercase;opacity:.85}
 .balance-amount{font-size:30px;font-weight:800;margin-top:4px}
 .tabs{display:flex;background:#f1f5f9;margin:-14px 16px 0;padding:4px;border-radius:12px;position:relative;z-index:1}
 .tab{flex:1;padding:10px;font-size:13px;font-weight:600;border:none;background:transparent;color:#64748b;border-radius:8px;cursor:pointer}
@@ -63,7 +60,7 @@ h1{font-size:24px;text-align:center;margin-bottom:4px}
 .pin-key.empty{background:transparent;pointer-events:none}
 .pin-title{font-size:18px;font-weight:700;text-align:center;margin-bottom:8px}
 .pin-sub{font-size:13px;opacity:.7;text-align:center;margin-bottom:8px;max-width:280px}
-.modal{position:fixed;inset:0;background:rgba(15,23,42,.4);backdrop-filter:blur(4px);z-index:50;display:flex;align-items:flex-end;justify-content:center}
+.modal{position:fixed;inset:0;background:rgba(15,23,42,.4);z-index:50;display:flex;align-items:flex-end;justify-content:center}
 .modal-content{background:#fff;width:100%;max-width:420px;border-radius:24px 24px 0 0;padding:24px;max-height:90vh;overflow-y:auto}
 .modal-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px}
 .close-btn{background:none;border:none;font-size:24px;cursor:pointer;color:#94a3b8;padding:4px}
@@ -74,7 +71,6 @@ h1{font-size:24px;text-align:center;margin-bottom:4px}
 .sync-bar{font-size:10px;opacity:.8;display:flex;align-items:center;gap:5px;margin-top:6px}
 .sync-dot{width:8px;height:8px;border-radius:50%;background:#10b981}
 .sync-dot.offline{background:#94a3b8}
-.sync-dot.syncing{background:#fbbf24}
 .signout{background:none;border:none;color:rgba(255,255,255,.8);font-size:20px;cursor:pointer;padding:6px}
 .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#1e293b;color:#fff;padding:12px 20px;border-radius:12px;font-size:13px;z-index:200;opacity:0;transition:opacity .3s;pointer-events:none}
 .toast.show{opacity:1}
@@ -84,409 +80,441 @@ h1{font-size:24px;text-align:center;margin-bottom:4px}
 <div id="app"></div>
 <div class="toast" id="toast"></div>
 <script>
-// ============================================================
-// CONFIGURATION SUPABASE
-// ============================================================
 const SUPABASE_URL = "https://oiuhotnsnradzabmdytk.supabase.co";
 const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9pdWhvdG5zbnJhZHphYm1keXRrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTExMTM3NDUsImV4cCI6MjEwNjY4OTc0NX0.JCjqwM2HAgiIVX9YwMN63PGzeA6Q9Tl8qsyou1Pke1I";
 
 const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 const app = document.getElementById('app');
 
-// ============================================================
-// UTILITAIRES
-// ============================================================
 function toast(msg){
   const t = document.getElementById('toast');
   t.textContent = msg;
   t.classList.add('show');
-  setTimeout(()=>t.classList.remove('show'), 2200);
+  setTimeout(function(){ t.classList.remove('show') }, 2200);
 }
-function uuid(){ return crypto.randomUUID ? crypto.randomUUID() : 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g,c=>{const r=Math.random()*16|0;const v=c==='x'?r:(r&0x3|0x8);return v.toString(16)}) }
+function uuid(){
+  if (crypto.randomUUID) return crypto.randomUUID();
+  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c){
+    var r = Math.random()*16|0;
+    var v = c==='x' ? r : (r&0x3|0x8);
+    return v.toString(16);
+  });
+}
 function fmt(n){ return Math.round(Number(n)).toLocaleString('fr-FR') + ' FCFA' }
 function today(){ return new Date().toISOString().slice(0,10) }
-function escHtml(s){ return String(s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])) }
+function escHtml(s){
+  return String(s||'').replace(/[&<>"']/g, function(c){
+    return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];
+  });
+}
 
-// ============================================================
-// STOCKAGE LOCAL
-// ============================================================
-const store = {
-  get(key){ try { return JSON.parse(localStorage.getItem('fft_'+key)) } catch { return null } },
-  set(key,val){ localStorage.setItem('fft_'+key, JSON.stringify(val)) },
-  del(key){ localStorage.removeItem('fft_'+key) }
+var store = {
+  get: function(key){ try { return JSON.parse(localStorage.getItem('fft_'+key)) } catch(e){ return null } },
+  set: function(key,val){ localStorage.setItem('fft_'+key, JSON.stringify(val)) },
+  del: function(key){ localStorage.removeItem('fft_'+key) }
 };
 
-// ============================================================
-// PIN (SHA-256 natif)
-// ============================================================
 async function sha256(txt){
-  const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(txt));
-  return btoa(String.fromCharCode(...new Uint8Array(buf)));
+  var buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(txt));
+  return btoa(String.fromCharCode.apply(null, new Uint8Array(buf)));
 }
 async function setPin(pin){ store.set('pin', await sha256('fft_salt_v1_'+pin)) }
 async function checkPin(pin){ return await sha256('fft_salt_v1_'+pin) === store.get('pin') }
 function hasPin(){ return !!store.get('pin') }
 
-// ============================================================
-// CACHE OFFLINE DES OPÉRATIONS
-// ============================================================
-function cacheOps(ops){ store.set('ops', ops) }
+function cacheOps(o){ store.set('ops', o) }
 function getCachedOps(){ return store.get('ops') || [] }
 function cacheProfile(p){ store.set('profile', p) }
 function getCachedProfile(){ return store.get('profile') }
 
-// ============================================================
-// ÉTAT GLOBAL
-// ============================================================
-let session = null;
-let profile = null;
-let ops = [];
-let activeTab = 'user';
-let isLocked = false;
-
+var session = null;
+var profile = null;
+var ops = [];
+var activeTab = 'user';
+var isLocked = false;
+var pinValue = '';
+var pinStep = 1;
+var pinFirst = '';
+var lockValue = '';
+var lockAttempts = 0;
+</script>
 // ============================================================
 // RENDER : AUTH
 // ============================================================
 function renderAuth(){
-  const isSignUp = !!(window.__isSignUp);
-  app.innerHTML = `
-    <div class="auth-wrap">
-      <div class="logo">FT</div>
-      <h1>FamilyFinTracker</h1>
-      <p class="subtitle">Gestion des finances familiales</p>
-      <div id="auth-error"></div>
-      <form id="auth-form">
-        <div class="field"><label>Email</label><input type="email" id="email" required></div>
-        <div class="field"><label>Mot de passe</label><input type="password" id="password" required minlength="6"></div>
-        <button type="submit" class="btn">${isSignUp ? "S'inscrire" : "Se connecter"}</button>
-      </form>
-      <button class="link-btn" id="toggle-auth">${isSignUp ? "Déjà un compte ? Se connecter" : "Pas de compte ? S'inscrire"}</button>
-    </div>`;
-  document.getElementById('toggle-auth').onclick = ()=>{ window.__isSignUp = !isSignUp; renderAuth() };
-  document.getElementById('auth-form').onsubmit = async (e)=>{
+  var isSignUp = !!window.__isSignUp;
+  app.innerHTML = '<div class="auth-wrap">' +
+    '<div class="logo">FT</div>' +
+    '<h1>FamilyFinTracker</h1>' +
+    '<p class="subtitle">Gestion des finances familiales</p>' +
+    '<div id="auth-error"></div>' +
+    '<form id="auth-form">' +
+      '<div class="field"><label>Email</label><input type="email" id="email" required></div>' +
+      '<div class="field"><label>Mot de passe</label><input type="password" id="password" required minlength="6"></div>' +
+      '<button type="submit" class="btn">' + (isSignUp ? "S\'inscrire" : "Se connecter") + '</button>' +
+    '</form>' +
+    '<button class="link-btn" id="toggle-auth">' + (isSignUp ? "Déjà un compte ? Se connecter" : "Pas de compte ? S\'inscrire") + '</button>' +
+  '</div>';
+
+  document.getElementById('toggle-auth').onclick = function(){
+    window.__isSignUp = !isSignUp;
+    renderAuth();
+  };
+
+  document.getElementById('auth-form').onsubmit = async function(e){
     e.preventDefault();
-    const email = document.getElementById('email').value.trim();
-    const password = document.getElementById('password').value;
-    const errEl = document.getElementById('auth-error');
+    var email = document.getElementById('email').value.trim();
+    var password = document.getElementById('password').value;
+    var errEl = document.getElementById('auth-error');
     errEl.innerHTML = '';
     try {
       if (isSignUp) {
-        const { error } = await sb.auth.signUp({ email, password });
-        if (error) throw error;
+        var r = await sb.auth.signUp({ email: email, password: password });
+        if (r.error) throw r.error;
         toast("Inscription réussie ! Connectez-vous.");
         window.__isSignUp = false;
         renderAuth();
       } else {
-        const { error } = await sb.auth.signInWithPassword({ email, password });
-        if (error) throw error;
+        var r2 = await sb.auth.signInWithPassword({ email: email, password: password });
+        if (r2.error) throw r2.error;
       }
     } catch (err) {
-      errEl.innerHTML = `<div class="error">${escHtml(err.message)}</div>`;
+      errEl.innerHTML = '<div class="error">' + escHtml(err.message) + '</div>';
     }
   };
 }
 
 // ============================================================
-// RENDER : SETUP PIN
+// RENDER : SETUP PIN (creation)
 // ============================================================
-let pinSetupStep = 1, pinSetup1 = '';
 function renderSetupPin(){
-  const current = pinSetupStep === 1 ? pinSetup1 : (window.__pinTmp || '');
-  app.innerHTML = `
-    <div class="pin-screen">
-      <div style="font-size:36px;margin-bottom:12px">🔐</div>
-      <div class="pin-title">${pinSetupStep === 1 ? 'Choisissez un code' : 'Confirmez le code'}</div>
-      <div class="pin-sub">Ce code protège vos données même si le téléphone est perdu. Il ne quitte jamais l'appareil.</div>
-      <div class="pin-dots" id="dots"></div>
-      <div class="pin-pad" id="pad"></div>
-      <button class="btn" id="pin-next" style="max-width:280px;margin-top:20px;background:#fff;color:#4f46e5">${pinSetupStep === 1 ? 'Suivant' : 'Terminer'}</button>
-    </div>`;
-  renderDots(current);
-  renderPad(current, (newVal)=>{
-    if (pinSetupStep === 1) pinSetup1 = newVal; else window.__pinTmp = newVal;
-    renderDots(newVal);
-    document.querySelectorAll('.pin-key:not(.empty)').forEach(()=>{});
-    // Update buttons by re-rendering only dots and pad
-    document.getElementById('dots').innerHTML = Array.from({length:6},(_,i)=>
-      `<div class="pin-dot ${i<newVal.length?'active':''}"></div>`).join('');
-    document.querySelectorAll('.pin-key').forEach(k=>k.onclick=null);
-    renderPadHandlers(newVal);
+  var current = pinStep === 1 ? pinFirst : pinValue;
+  var title = pinStep === 1 ? 'Choisissez un code' : 'Confirmez le code';
+  app.innerHTML = '<div class="pin-screen">' +
+    '<div style="font-size:36px;margin-bottom:12px">🔐</div>' +
+    '<div class="pin-title">' + title + '</div>' +
+    '<div class="pin-sub">Ce code protège vos données même si le téléphone est perdu.</div>' +
+    '<div class="pin-dots" id="dots"></div>' +
+    '<div class="pin-pad" id="pad"></div>' +
+    '<button class="btn" id="pin-next" style="max-width:280px;margin-top:20px;background:#fff;color:#4f46e5">' + (pinStep === 1 ? 'Suivant' : 'Terminer') + '</button>' +
+  '</div>';
+
+  drawDots(current);
+  drawPinPad(function(k){
+    if (k === 'del') {
+      if (pinStep === 1) pinFirst = pinFirst.slice(0,-1);
+      else pinValue = pinValue.slice(0,-1);
+    } else {
+      if (pinStep === 1) { if (pinFirst.length < 6) pinFirst += k }
+      else { if (pinValue.length < 6) pinValue += k }
+    }
+    var cur = pinStep === 1 ? pinFirst : pinValue;
+    drawDots(cur);
   });
-  document.getElementById('pin-next').onclick = async ()=>{
-    if (pinSetupStep === 1) {
-      if (pinSetup1.length < 4) return toast('4 chiffres minimum');
-      pinSetupStep = 2;
-      window.__pinTmp = '';
+
+  document.getElementById('pin-next').onclick = async function(){
+    if (pinStep === 1) {
+      if (pinFirst.length < 4) { toast('4 chiffres minimum'); return }
+      pinStep = 2;
+      pinValue = '';
       renderSetupPin();
     } else {
-      if (window.__pinTmp !== pinSetup1) {
+      if (pinValue !== pinFirst) {
         toast('Les codes ne correspondent pas');
-        pinSetupStep = 1; pinSetup1 = ''; window.__pinTmp = '';
+        pinStep = 1; pinFirst = ''; pinValue = '';
         renderSetupPin();
         return;
       }
-      await setPin(pinSetup1);
-      pinSetupStep = 1; pinSetup1 = ''; window.__pinTmp = '';
+      await setPin(pinFirst);
+      pinStep = 1; pinFirst = ''; pinValue = '';
+      isLocked = false;
       renderDashboard();
     }
   };
 }
-function renderDots(val){
-  const d = document.getElementById('dots');
+
+function drawDots(val){
+  var d = document.getElementById('dots');
   if (!d) return;
-  d.innerHTML = Array.from({length:6},(_,i)=>
-    `<div class="pin-dot ${i<val.length?'active':''}"></div>`).join('');
+  var html = '';
+  for (var i = 0; i < 6; i++) {
+    html += '<div class="pin-dot ' + (i < val.length ? 'active' : '') + '"></div>';
+  }
+  d.innerHTML = html;
 }
-function renderPad(val, onDigit){
-  const pad = document.getElementById('pad');
+
+function drawPinPad(onKey){
+  var pad = document.getElementById('pad');
   if (!pad) return;
   pad.innerHTML = '';
-  const keys = ['1','2','3','4','5','6','7','8','9','empty','0','del'];
-  keys.forEach(k=>{
-    const b = document.createElement('button');
-    b.className = 'pin-key' + (k==='empty'?' empty':'');
-    b.textContent = k==='del' ? '⌫' : (k==='empty' ? '' : k);
-    if (k !== 'empty') {
-      b.onclick = ()=>{
-        if (k === 'del') {
-          const nv = val.slice(0,-1);
-          if (pinSetupStep === 1) { pinSetup1 = nv; renderSetupPin(); }
-          else { window.__pinTmp = nv; renderSetupPin(); }
-        } else if (val.length < 6) {
-          const nv = val + k;
-          if (pinSetupStep === 1) pinSetup1 = nv; else window.__pinTmp = nv;
-          renderSetupPin();
-        }
-      };
+  var keys = ['1','2','3','4','5','6','7','8','9','','0','del'];
+  for (var i = 0; i < keys.length; i++) {
+    var k = keys[i];
+    var b = document.createElement('button');
+    b.className = 'pin-key' + (k === '' ? ' empty' : '');
+    b.textContent = k === 'del' ? '⌫' : k;
+    if (k !== '') {
+      (function(key){
+        b.onclick = function(){ onKey(key) };
+      })(k);
     }
     pad.appendChild(b);
-  });
+  }
 }
-function renderPadHandlers(){/* no-op, géré dans renderPad */}
 
 // ============================================================
 // RENDER : LOCK SCREEN
 // ============================================================
-let lockAttempts = 0, lockValue = '';
 function renderLock(){
   isLocked = true;
-  app.innerHTML = `
-    <div class="pin-screen">
-      <div style="font-size:36px;margin-bottom:12px">🔒</div>
-      <div class="pin-title">FamilyFinTracker</div>
-      <div class="pin-sub">Entrez votre code</div>
-      <div class="pin-dots" id="dots"></div>
-      <div id="lock-error" style="color:#fecaca;font-size:13px;margin-bottom:12px;min-height:18px"></div>
-      <div class="pin-pad" id="pad"></div>
-    </div>`;
-  renderDots(lockValue);
-  const pad = document.getElementById('pad');
-  const keys = ['1','2','3','4','5','6','7','8','9','empty','0','del'];
-  keys.forEach(k=>{
-    const b = document.createElement('button');
-    b.className = 'pin-key' + (k==='empty'?' empty':'');
-    b.textContent = k==='del' ? '⌫' : (k==='empty'?'':k);
-    if (k !== 'empty') {
-      b.onclick = async ()=>{
-        if (k === 'del') { lockValue = lockValue.slice(0,-1); renderDots(lockValue); return }
-        if (lockValue.length >= 6) return;
-        lockValue += k;
-        renderDots(lockValue);
-        if (lockValue.length >= 4) {
-          const ok = await checkPin(lockValue);
-          if (ok) {
-  lockValue = ''; lockAttempts = 0;
-  isLocked = false;
-  renderDashboard();
-}
-          } else if (lockValue.length === 6) {
-            lockAttempts++;
-            document.getElementById('lock-error').textContent = `Code incorrect (${lockAttempts})`;
-            lockValue = '';
-            renderDots(lockValue);
+  lockValue = '';
+  app.innerHTML = '<div class="pin-screen">' +
+    '<div style="font-size:36px;margin-bottom:12px">🔒</div>' +
+    '<div class="pin-title">FamilyFinTracker</div>' +
+    '<div class="pin-sub">Entrez votre code</div>' +
+    '<div class="pin-dots" id="dots"></div>' +
+    '<div id="lock-error" style="color:#fecaca;font-size:13px;margin-bottom:12px;min-height:18px"></div>' +
+    '<div class="pin-pad" id="pad"></div>' +
+  '</div>';
+
+  drawDots(lockValue);
+
+  var pad = document.getElementById('pad');
+  var keys = ['1','2','3','4','5','6','7','8','9','','0','del'];
+  for (var i = 0; i < keys.length; i++) {
+    (function(k){
+      var b = document.createElement('button');
+      b.className = 'pin-key' + (k === '' ? ' empty' : '');
+      b.textContent = k === 'del' ? '⌫' : k;
+      if (k !== '') {
+        b.onclick = async function(){
+          if (k === 'del') {
+            lockValue = lockValue.slice(0,-1);
+            drawDots(lockValue);
+            return;
           }
-        }
-      };
-    }
-    pad.appendChild(b);
-  });
+          if (lockValue.length >= 6) return;
+          lockValue += k;
+          drawDots(lockValue);
+          if (lockValue.length >= 4) {
+            var ok = await checkPin(lockValue);
+            if (ok) {
+              lockValue = '';
+              lockAttempts = 0;
+              isLocked = false;
+              renderDashboard();
+            } else if (lockValue.length === 6) {
+              lockAttempts++;
+              var errEl = document.getElementById('lock-error');
+              if (errEl) errEl.textContent = 'Code incorrect (' + lockAttempts + ')';
+              lockValue = '';
+              drawDots(lockValue);
+            }
+          }
+        };
+      }
+      pad.appendChild(b);
+    })(keys[i]);
+  }
 }
 
 // ============================================================
 // RENDER : DASHBOARD
 // ============================================================
 function renderDashboard(){
-  if (isLocked) return renderLock();
-  if (!session) return renderAuth();
-  const userEmail = session.user.email || '';
-  const role = profile?.role || 'member';
-  const isAdmin = role === 'admin';
+  if (isLocked) { renderLock(); return }
+  if (!session) { renderAuth(); return }
 
-  const balance = ops.reduce((a,o)=> o.type === 'deposit' ? a + Number(o.amount) : a - Number(o.amount), 0);
+  var userEmail = session.user.email || '';
+  var role = (profile && profile.role) ? profile.role : 'member';
+  var isAdmin = role === 'admin';
 
-  app.innerHTML = `
-    <div id="dashboard-root">
-      <header>
-        <div class="header-top">
-          <div>
-            <div style="font-weight:700;font-size:16px">FamilyFinTracker</div>
-            <div class="email">${escHtml(userEmail)}</div>
-            <div class="sync-bar"><span class="sync-dot ${navigator.onLine?'':'offline'}" id="sync-dot"></span><span id="sync-text">${navigator.onLine?'En ligne':'Hors ligne'}</span></div>
-          </div>
-          <div style="display:flex;align-items:center;gap:8px">
-            <span class="badge ${isAdmin?'admin':'member'}">${isAdmin?'Admin':'Membre'}</span>
-            <button class="signout" id="signout">🚪</button>
-          </div>
-        </div>
-        <div id="balance-area"></div>
-      </header>
-      ${isAdmin ? `
-        <div class="tabs">
-          <button class="tab ${activeTab==='user'?'active':''}" data-tab="user">Mon espace</button>
-          <button class="tab ${activeTab==='group'?'active':''}" data-tab="group">Vue groupe</button>
-        </div>` : ''}
-      <main id="main-area"></main>
-    </div>`;
+  var balance = 0;
+  for (var i = 0; i < ops.length; i++) {
+    var o = ops[i];
+    if (o.type === 'deposit') balance += Number(o.amount);
+    else balance -= Number(o.amount);
+  }
 
-  document.getElementById('signout').onclick = async ()=>{
+  var tabsHtml = '';
+  if (isAdmin) {
+    tabsHtml = '<div class="tabs">' +
+      '<button class="tab ' + (activeTab==='user'?'active':'') + '" data-tab="user">Mon espace</button>' +
+      '<button class="tab ' + (activeTab==='group'?'active':'') + '" data-tab="group">Vue groupe</button>' +
+    '</div>';
+  }
+
+  app.innerHTML = '<div id="dashboard-root">' +
+    '<header>' +
+      '<div class="header-top">' +
+        '<div>' +
+          '<div style="font-weight:700;font-size:16px">FamilyFinTracker</div>' +
+          '<div class="email">' + escHtml(userEmail) + '</div>' +
+          '<div class="sync-bar"><span class="sync-dot ' + (navigator.onLine?'':'offline') + '" id="sync-dot"></span><span id="sync-text">' + (navigator.onLine?'En ligne':'Hors ligne') + '</span></div>' +
+        '</div>' +
+        '<div style="display:flex;align-items:center;gap:8px">' +
+          '<span class="badge ' + (isAdmin?'admin':'member') + '">' + (isAdmin?'Admin':'Membre') + '</span>' +
+          '<button class="signout" id="signout">🚪</button>' +
+        '</div>' +
+      '</div>' +
+      '<div id="balance-area"></div>' +
+    '</header>' +
+    tabsHtml +
+    '<main id="main-area"></main>' +
+  '</div>';
+
+  document.getElementById('signout').onclick = async function(){
     await sb.auth.signOut();
     session = null; profile = null;
     store.del('profile');
     renderAuth();
   };
-  document.querySelectorAll('.tab').forEach(b=>{
-    b.onclick = ()=>{ activeTab = b.dataset.tab; renderDashboard() };
-  });
 
-  renderBalance(balance);
-  renderMain();
-
-  // Écoute online/offline
-  window.addEventListener('online', updateSyncStatus, {once:true});
-  window.addEventListener('offline', updateSyncStatus, {once:true});
-}
-function updateSyncStatus(){
-  const dot = document.getElementById('sync-dot');
-  const txt = document.getElementById('sync-text');
-  if (!dot) return;
-  if (navigator.onLine) { dot.classList.remove('offline'); txt.textContent = 'En ligne'; syncNow(); }
-  else { dot.classList.add('offline'); txt.textContent = 'Hors ligne'; }
-}
-function renderBalance(balance){
-  const area = document.getElementById('balance-area');
-  if (!area) return;
-  if (activeTab === 'user') {
-    area.innerHTML = `
-      <div class="balance-box">
-        <div class="balance-label">Mon solde</div>
-        <div class="balance-amount">${fmt(balance)}</div>
-      </div>`;
-  } else {
-    area.innerHTML = '';
+  var tabBtns = document.querySelectorAll('.tab');
+  for (var j = 0; j < tabBtns.length; j++) {
+    (function(b){
+      b.onclick = function(){ activeTab = b.dataset.tab; renderDashboard() };
+    })(tabBtns[j]);
   }
-}
-function renderMain(){
-  const area = document.getElementById('main-area');
-  if (!area) return;
+
   if (activeTab === 'user') {
+    document.getElementById('balance-area').innerHTML =
+      '<div class="balance-box">' +
+        '<div class="balance-label">Mon solde</div>' +
+        '<div class="balance-amount">' + fmt(balance) + '</div>' +
+      '</div>';
+  }
+
+  renderMain();
+}
+
+function renderMain(){
+  var area = document.getElementById('main-area');
+  if (!area) return;
+
+  if (activeTab === 'user') {
+    var html = '<div class="title-row"><div class="title">Opérations</div><button class="btn small" id="new-op">+ Ajouter</button></div>';
     if (ops.length === 0) {
-      area.innerHTML = `
-        <div class="title-row"><div class="title">Opérations</div><button class="btn small" id="new-op">+ Ajouter</button></div>
-        <div class="empty">Aucune opération</div>`;
+      html += '<div class="empty">Aucune opération</div>';
     } else {
-      area.innerHTML = `
-        <div class="title-row"><div class="title">Opérations</div><button class="btn small" id="new-op">+ Ajouter</button></div>
-        ${ops.slice().sort((a,b)=>(b.operation_date||'').localeCompare(a.operation_date||'')).map(o=>`
-          <div class="op">
-            <div class="op-icon ${o.type}">${o.type==='deposit'?'+':'-'}</div>
-            <div class="op-info">
-              <div class="op-desc">${escHtml(o.description || (o.type==='deposit'?'Dépôt':'Dépense'))}</div>
-              <div class="op-date">${o.operation_date || ''}</div>
-            </div>
-            <div class="op-amount ${o.type}">${o.type==='deposit'?'+':'-'}${fmt(o.amount)}</div>
-          </div>`).join('')}`;
+      var sorted = ops.slice().sort(function(a,b){
+        return (b.operation_date||'').localeCompare(a.operation_date||'');
+      });
+      for (var i = 0; i < sorted.length; i++) {
+        var o = sorted[i];
+        var sign = o.type === 'deposit' ? '+' : '-';
+        html += '<div class="op">' +
+          '<div class="op-icon ' + o.type + '">' + sign + '</div>' +
+          '<div class="op-info">' +
+            '<div class="op-desc">' + escHtml(o.description || (o.type==='deposit'?'Dépôt':'Dépense')) + '</div>' +
+            '<div class="op-date">' + (o.operation_date || '') + '</div>' +
+          '</div>' +
+          '<div class="op-amount ' + o.type + '">' + sign + fmt(o.amount) + '</div>' +
+        '</div>';
+      }
     }
+    area.innerHTML = html;
     document.getElementById('new-op').onclick = openNewOpModal;
   } else {
-    // Vue groupe : calcule par profil (basique, sans cache)
-    area.innerHTML = `<div class="title">Membres</div><div class="empty">Chargement...</div>`;
+    area.innerHTML = '<div class="title">Membres</div><div class="empty">Chargement...</div>';
     loadGroupView();
   }
 }
 
 async function loadGroupView(){
-  const area = document.getElementById('main-area');
+  var area = document.getElementById('main-area');
   if (!area) return;
   try {
-    const { data: profiles } = await sb.from('profiles').select('*');
-    const { data: allOps } = await sb.from('operations').select('*');
-    if (!profiles || !allOps) throw new Error('Erreur');
-    const rows = profiles.map(p=>{
-      const uops = allOps.filter(o=>o.user_id === p.id);
-      const bal = uops.reduce((a,o)=> o.type==='deposit' ? a + Number(o.amount) : a - Number(o.amount), 0);
-      return {...p, balance: bal};
-    });
-    area.innerHTML = `<div class="title">Membres (${rows.length})</div>` + rows.map(m=>`
-      <div class="op">
-        <div class="op-icon deposit">${(m.email||'?')[0].toUpperCase()}</div>
-        <div class="op-info">
-          <div class="op-desc">${escHtml(m.email||m.id.slice(0,8))}</div>
-          <div class="op-date">${m.role}</div>
-        </div>
-        <div class="op-amount ${m.balance>=0?'deposit':'expense'}">${fmt(m.balance)}</div>
-      </div>`).join('');
-  } catch(e){
-    area.innerHTML = `<div class="empty">Erreur de chargement : ${escHtml(e.message)}</div>`;
+    var rp = await sb.from('profiles').select('*');
+    var ro = await sb.from('operations').select('*');
+    var profiles = rp.data || [];
+    var allOps = ro.data || [];
+    var html = '<div class="title">Membres (' + profiles.length + ')</div>';
+    for (var i = 0; i < profiles.length; i++) {
+      var p = profiles[i];
+      var bal = 0;
+      for (var j = 0; j < allOps.length; j++) {
+        if (allOps[j].user_id === p.id) {
+          if (allOps[j].type === 'deposit') bal += Number(allOps[j].amount);
+          else bal -= Number(allOps[j].amount);
+        }
+      }
+      var initial = (p.email || '?')[0].toUpperCase();
+      html += '<div class="op">' +
+        '<div class="op-icon deposit">' + initial + '</div>' +
+        '<div class="op-info">' +
+          '<div class="op-desc">' + escHtml(p.email || p.id.slice(0,8)) + '</div>' +
+          '<div class="op-date">' + (p.role || 'membre') + '</div>' +
+        '</div>' +
+        '<div class="op-amount ' + (bal>=0?'deposit':'expense') + '">' + fmt(bal) + '</div>' +
+      '</div>';
+    }
+    area.innerHTML = html;
+  } catch(e) {
+    area.innerHTML = '<div class="empty">Erreur : ' + escHtml(e.message) + '</div>';
   }
 }
 
 // ============================================================
-// MODAL NOUVELLE OPÉRATION
+// MODAL NOUVELLE OPERATION
 // ============================================================
 function openNewOpModal(){
-  let type = 'expense';
-  const modal = document.createElement('div');
+  var type = 'expense';
+  var modal = document.createElement('div');
   modal.className = 'modal';
-  modal.innerHTML = `
-    <div class="modal-content">
-      <div class="modal-header">
-        <div class="title">Nouvelle opération</div>
-        <button class="close-btn" id="modal-close">✕</button>
-      </div>
-      <div class="type-toggle">
-        <button class="type-btn active-expense" id="type-expense">Dépense</button>
-        <button class="type-btn" id="type-deposit">Dépôt</button>
-      </div>
-      <div class="field"><label>Montant (€)</label><input type="number" step="0.01" id="op-amount" placeholder="0.00"></div>
-      <div class="field"><label>Description</label><input type="text" id="op-desc" placeholder="Courses, argent de poche..."></div>
-      <div class="field"><label>Date</label><input type="date" id="op-date" value="${today()}"></div>
-      <button class="btn" id="op-save" style="margin-top:8px">Valider</button>
-    </div>`;
+  modal.innerHTML = '<div class="modal-content">' +
+    '<div class="modal-header">' +
+      '<div class="title">Nouvelle opération</div>' +
+      '<button class="close-btn" id="modal-close">✕</button>' +
+    '</div>' +
+    '<div class="type-toggle">' +
+      '<button class="type-btn active-expense" id="type-expense">Dépense</button>' +
+      '<button class="type-btn" id="type-deposit">Dépôt</button>' +
+    '</div>' +
+    '<div class="field"><label>Montant (FCFA)</label><input type="number" step="1" id="op-amount" placeholder="0"></div>' +
+    '<div class="field"><label>Description</label><input type="text" id="op-desc" placeholder="Courses, argent de poche..."></div>' +
+    '<div class="field"><label>Date</label><input type="date" id="op-date" value="' + today() + '"></div>' +
+    '<button class="btn" id="op-save" style="margin-top:8px">Valider</button>' +
+  '</div>';
   document.body.appendChild(modal);
 
-  const btnExp = modal.querySelector('#type-expense');
-  const btnDep = modal.querySelector('#type-deposit');
-  btnExp.onclick = ()=>{ type='expense'; btnExp.classList.add('active-expense'); btnDep.classList.remove('active-deposit') };
-  btnDep.onclick = ()=>{ type='deposit'; btnDep.classList.add('active-deposit'); btnExp.classList.remove('active-expense') };
+  var btnExp = modal.querySelector('#type-expense');
+  var btnDep = modal.querySelector('#type-deposit');
 
-  modal.querySelector('#modal-close').onclick = ()=> modal.remove();
-  modal.querySelector('#op-save').onclick = async ()=>{
-    const amount = parseFloat(modal.querySelector('#op-amount').value);
-    const description = modal.querySelector('#op-desc').value.trim();
-    const operation_date = modal.querySelector('#op-date').value;
-    if (!amount || amount <= 0) return toast('Montant invalide');
-    const newOp = {
+  btnExp.onclick = function(){
+    type = 'expense';
+    btnExp.classList.add('active-expense');
+    btnDep.classList.remove('active-deposit');
+  };
+  btnDep.onclick = function(){
+    type = 'deposit';
+    btnDep.classList.add('active-deposit');
+    btnExp.classList.remove('active-expense');
+  };
+
+  modal.querySelector('#modal-close').onclick = function(){ modal.remove() };
+
+  modal.querySelector('#op-save').onclick = function(){
+    var amount = parseFloat(modal.querySelector('#op-amount').value);
+    var description = modal.querySelector('#op-desc').value.trim();
+    var operation_date = modal.querySelector('#op-date').value;
+    if (!amount || amount <= 0) { toast('Montant invalide'); return }
+
+    var newOp = {
       id: uuid(),
       user_id: session.user.id,
-      type, amount, description, operation_date
+      type: type,
+      amount: amount,
+      description: description,
+      operation_date: operation_date
     };
-    // Écriture locale immédiate
+
     ops.push(newOp);
     cacheOps(ops);
     modal.remove();
     renderDashboard();
     toast('Enregistré');
-    // Sync cloud en arrière-plan
+
     if (navigator.onLine) syncNow();
   };
 }
@@ -496,47 +524,49 @@ function openNewOpModal(){
 // ============================================================
 async function syncNow(){
   if (!session || !navigator.onLine) return;
-  const dot = document.getElementById('sync-dot');
-  const txt = document.getElementById('sync-text');
-  if (dot) { dot.classList.add('syncing'); dot.classList.remove('offline') }
+  var dot = document.getElementById('sync-dot');
+  var txt = document.getElementById('sync-text');
+  if (dot) dot.classList.remove('offline');
   if (txt) txt.textContent = 'Sync…';
+
   try {
-    // Push : envoie toutes les opérations locales
-    for (const op of ops) {
+    for (var i = 0; i < ops.length; i++) {
+      var op = ops[i];
       await sb.from('operations').upsert({
-        id: op.id, user_id: op.user_id, type: op.type,
-        amount: op.amount, description: op.description || null,
+        id: op.id,
+        user_id: op.user_id,
+        type: op.type,
+        amount: op.amount,
+        description: op.description || null,
         operation_date: op.operation_date
       });
     }
-    // Pull : récupère toutes les opérations de l'utilisateur
-    const { data } = await sb.from('operations').select('*').eq('user_id', session.user.id);
-    if (data) { ops = data; cacheOps(ops) }
-    // Profil
-    const { data: prof } = await sb.from('profiles').select('*').eq('id', session.user.id).single();
-    if (prof) { profile = prof; cacheProfile(prof) }
-    if (txt) { txt.textContent = 'En ligne'; dot.classList.remove('syncing') }
+
+    var rp = await sb.from('operations').select('*').eq('user_id', session.user.id);
+    if (rp.data) { ops = rp.data; cacheOps(ops) }
+
+    var rprof = await sb.from('profiles').select('*').eq('id', session.user.id).single();
+    if (rprof.data) { profile = rprof.data; cacheProfile(profile) }
+
+    if (txt) txt.textContent = 'En ligne';
     if (activeTab === 'user') renderDashboard();
-  } catch(e){
+  } catch(e) {
     console.warn('Sync error', e);
     if (txt) txt.textContent = 'Erreur sync';
-    if (dot) { dot.classList.remove('syncing'); dot.classList.add('offline') }
+    if (dot) dot.classList.add('offline');
   }
 }
 
 // ============================================================
-// DÉMARRAGE
+// DEMARRAGE
 // ============================================================
 async function boot(){
-  // Charge le cache local immédiatement
   profile = getCachedProfile();
   ops = getCachedOps();
 
-  // Vérifie la session
-  const { data: { session: s } } = await sb.auth.getSession();
-  session = s;
+  var r = await sb.auth.getSession();
+  session = r.data.session;
 
-  // Ordre de priorité : PIN > Auth > Dashboard
   if (hasPin()) {
     renderLock();
   } else if (!session) {
@@ -545,30 +575,29 @@ async function boot(){
     renderSetupPin();
   }
 
-  // Écoute les changements de session
-  sb.auth.onAuthStateChange((_evt, s)=>{
+  sb.auth.onAuthStateChange(function(_evt, s){
     session = s;
     if (!s) {
       profile = null;
       store.del('profile');
-      if (hasPin()) renderLock(); else renderAuth();
+      if (hasPin()) renderLock();
+      else renderAuth();
     } else {
-      // Charge le profil et sync
-      syncNow().then(()=>{
-        if (hasPin()) renderDashboard();
+      syncNow().then(function(){
+        if (hasPin() && isLocked) renderLock();
+        else renderDashboard();
       });
     }
   });
 
-  // Sync au démarrage si connecté
   if (session) syncNow();
 }
+
 boot();
 
-// Enregistre le Service Worker si présent
 if ('serviceWorker' in navigator) {
-  window.addEventListener('load', ()=>{
-    navigator.serviceWorker.register('./sw.js').catch(()=>{});
+  window.addEventListener('load', function(){
+    navigator.serviceWorker.register('./sw.js').catch(function(){});
   });
 }
 </script>
