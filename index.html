@@ -11,9 +11,8 @@
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 body{font-family:-apple-system,BlinkMacSystemFont,sans-serif;background:#f8fafc;color:#1e293b;font-size:15px}
 #app{max-width:420px;margin:0 auto;min-height:100vh;background:#fff;box-shadow:0 0 20px rgba(0,0,0,.05)}
-.btn{background:#4f46e5;color:#fff;border:none;padding:14px;border-radius:12px;font-size:15px;font-weight:600;width:100%;cursor:pointer}
+.btn{background:#4f46e5;color:#fff;border:none;padding:14px;border-radius:12px;font-size:15px;font-weight:600;width:100%;cursor:pointer;font-family:inherit}
 .btn:active{background:#4338ca}
-.btn.secondary{background:#f1f5f9;color:#475569}
 .btn.small{width:auto;padding:8px 14px;font-size:13px}
 input,select{width:100%;padding:14px;border:1px solid #e2e8f0;border-radius:12px;font-size:15px;background:#fff;font-family:inherit}
 input:focus,select:focus{outline:2px solid #4f46e5;border-color:transparent}
@@ -29,7 +28,7 @@ header{background:#4f46e5;color:#fff;padding:20px;border-radius:0 0 24px 24px}
 .balance-label{font-size:11px;text-transform:uppercase;opacity:.85}
 .balance-amount{font-size:30px;font-weight:800;margin-top:4px}
 .tabs{display:flex;background:#f1f5f9;margin:-14px 16px 0;padding:4px;border-radius:12px;position:relative;z-index:1}
-.tab{flex:1;padding:10px;font-size:13px;font-weight:600;border:none;background:transparent;color:#64748b;border-radius:8px;cursor:pointer}
+.tab{flex:1;padding:10px;font-size:13px;font-weight:600;border:none;background:transparent;color:#64748b;border-radius:8px;cursor:pointer;font-family:inherit}
 .tab.active{background:#fff;color:#4f46e5;box-shadow:0 1px 3px rgba(0,0,0,.08)}
 main{padding:20px 16px 100px}
 .op{display:flex;align-items:center;gap:12px;padding:14px;background:#f8fafc;border-radius:14px;margin-bottom:10px;border:1px solid #f1f5f9}
@@ -49,29 +48,29 @@ main{padding:20px 16px 100px}
 h1{font-size:24px;text-align:center;margin-bottom:4px}
 .subtitle{text-align:center;color:#94a3b8;font-size:13px;margin-bottom:32px}
 .error{background:#fef2f2;color:#dc2626;padding:12px;border-radius:10px;font-size:13px;margin-bottom:16px}
-.link-btn{background:none;border:none;color:#4f46e5;font-size:13px;font-weight:600;cursor:pointer;padding:8px;width:100%}
-.pin-screen{position:fixed;inset:0;background:#4f46e5;color:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px;z-index:100}
-.pin-dots{display:flex;gap:12px;margin:24px 0}
-.pin-dot{width:14px;height:14px;border-radius:50%;background:rgba(255,255,255,.3);transition:all .2s}
-.pin-dot.active{background:#fff;transform:scale(1.15)}
-.pin-pad{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;width:100%;max-width:280px}
-.pin-key{aspect-ratio:1;background:rgba(255,255,255,.1);border:none;color:#fff;font-size:22px;font-weight:700;border-radius:16px;cursor:pointer}
-.pin-key:active{background:rgba(255,255,255,.25)}
-.pin-key.empty{background:transparent;pointer-events:none}
-.pin-title{font-size:18px;font-weight:700;text-align:center;margin-bottom:8px}
-.pin-sub{font-size:13px;opacity:.7;text-align:center;margin-bottom:8px;max-width:280px}
-.modal{position:fixed;inset:0;background:rgba(15,23,42,.4);z-index:50;display:flex;align-items:flex-end;justify-content:center}
+.link-btn{background:none;border:none;color:#4f46e5;font-size:13px;font-weight:600;cursor:pointer;padding:8px;width:100%;font-family:inherit}
+.pin-screen{position:fixed;top:0;left:0;right:0;bottom:0;background:#4f46e5;color:#fff;z-index:100;overflow-y:auto;padding:24px}
+.pin-inner{max-width:320px;margin:60px auto 0;text-align:center}
+.pin-icon{font-size:48px;margin-bottom:16px}
+.pin-title{font-size:20px;font-weight:700;margin-bottom:8px}
+.pin-sub{font-size:14px;opacity:.75;margin-bottom:24px}
+.pin-error{color:#fecaca;font-size:13px;margin-bottom:12px;height:18px}
+.pin-input{width:100%;padding:20px;font-size:32px;text-align:center;letter-spacing:8px;border-radius:16px;border:2px solid rgba(255,255,255,0.5);background:rgba(255,255,255,0.15);color:#fff;font-family:inherit}
+.pin-btn{margin-top:20px;width:100%;padding:18px;background:#fff;color:#4f46e5;border:none;border-radius:16px;font-size:16px;font-weight:700;font-family:inherit;cursor:pointer}
+.pin-btn.secondary{margin-top:12px;padding:12px;background:transparent;color:#fff;border:1px solid rgba(255,255,255,0.4);font-size:13px;font-weight:400}
+.modal{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(15,23,42,.5);z-index:50;display:flex;align-items:flex-end;justify-content:center}
 .modal-content{background:#fff;width:100%;max-width:420px;border-radius:24px 24px 0 0;padding:24px;max-height:90vh;overflow-y:auto}
 .modal-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px}
-.close-btn{background:none;border:none;font-size:24px;cursor:pointer;color:#94a3b8;padding:4px}
+.close-btn{background:none;border:none;font-size:24px;cursor:pointer;color:#94a3b8;padding:4px;font-family:inherit}
 .type-toggle{display:grid;grid-template-columns:1fr 1fr;gap:6px;background:#f1f5f9;padding:4px;border-radius:12px;margin-bottom:16px}
-.type-btn{padding:10px;font-size:13px;font-weight:700;border:none;background:transparent;color:#64748b;border-radius:8px;cursor:pointer}
+.type-btn{padding:10px;font-size:13px;font-weight:700;border:none;background:transparent;color:#64748b;border-radius:8px;cursor:pointer;font-family:inherit}
 .type-btn.active-expense{background:#ef4444;color:#fff}
 .type-btn.active-deposit{background:#10b981;color:#fff}
 .sync-bar{font-size:10px;opacity:.8;display:flex;align-items:center;gap:5px;margin-top:6px}
 .sync-dot{width:8px;height:8px;border-radius:50%;background:#10b981}
 .sync-dot.offline{background:#94a3b8}
-.signout{background:none;border:none;color:rgba(255,255,255,.8);font-size:20px;cursor:pointer;padding:6px}
+.sync-dot.syncing{background:#fbbf24}
+.signout{background:none;border:none;color:rgba(255,255,255,.8);font-size:20px;cursor:pointer;padding:6px;font-family:inherit}
 .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#1e293b;color:#fff;padding:12px 20px;border-radius:12px;font-size:13px;z-index:200;opacity:0;transition:opacity .3s;pointer-events:none}
 .toast.show{opacity:1}
 </style>
@@ -80,18 +79,25 @@ h1{font-size:24px;text-align:center;margin-bottom:4px}
 <div id="app"></div>
 <div class="toast" id="toast"></div>
 <script>
-const SUPABASE_URL = "https://oiuhotnsnradzabmdytk.supabase.co";
-const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9pdWhvdG5zbnJhZHphYm1keXRrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTExMTM3NDUsImV4cCI6MjEwNjY4OTc0NX0.JCjqwM2HAgiIVX9YwMN63PGzeA6Q9Tl8qsyou1Pke1I";
+// ============================================================
+// CONFIGURATION SUPABASE
+// ============================================================
+var SUPABASE_URL = "https://oiuhotnsnradzabmdytk.supabase.co";
+var SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9pdWhvdG5zbnJhZHphYm1keXRrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTExMTM3NDUsImV4cCI6MjEwNjY4OTc0NX0.JCjqwM2HAgiIVX9YwMN63PGzeA6Q9Tl8qsyou1Pke1I";
 
-const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-const app = document.getElementById('app');
+var sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+var app = document.getElementById('app');
 
+// ============================================================
+// UTILITAIRES
+// ============================================================
 function toast(msg){
-  const t = document.getElementById('toast');
+  var t = document.getElementById('toast');
   t.textContent = msg;
   t.classList.add('show');
   setTimeout(function(){ t.classList.remove('show') }, 2200);
 }
+
 function uuid(){
   if (crypto.randomUUID) return crypto.randomUUID();
   return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c){
@@ -100,45 +106,73 @@ function uuid(){
     return v.toString(16);
   });
 }
-function fmt(n){ return Math.round(Number(n)).toLocaleString('fr-FR') + ' FCFA' }
-function today(){ return new Date().toISOString().slice(0,10) }
+
+function fmt(n){
+  return Math.round(Number(n)).toLocaleString('fr-FR') + ' FCFA';
+}
+
+function today(){
+  return new Date().toISOString().slice(0,10);
+}
+
 function escHtml(s){
   return String(s||'').replace(/[&<>"']/g, function(c){
     return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];
   });
 }
 
+// ============================================================
+// STOCKAGE LOCAL
+// ============================================================
 var store = {
-  get: function(key){ try { return JSON.parse(localStorage.getItem('fft_'+key)) } catch(e){ return null } },
+  get: function(key){
+    try { return JSON.parse(localStorage.getItem('fft_'+key)) } catch(e){ return null }
+  },
   set: function(key,val){ localStorage.setItem('fft_'+key, JSON.stringify(val)) },
   del: function(key){ localStorage.removeItem('fft_'+key) }
 };
 
+// ============================================================
+// PIN (SHA-256 natif)
+// ============================================================
 async function sha256(txt){
   var buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(txt));
   return btoa(String.fromCharCode.apply(null, new Uint8Array(buf)));
 }
-async function setPin(pin){ store.set('pin', await sha256('fft_salt_v1_'+pin)) }
-async function checkPin(pin){ return await sha256('fft_salt_v1_'+pin) === store.get('pin') }
-function hasPin(){ return !!store.get('pin') }
 
+async function setPin(pin){
+  store.set('pin', await sha256('fft_salt_v1_'+pin));
+}
+
+async function checkPin(pin){
+  return await sha256('fft_salt_v1_'+pin) === store.get('pin');
+}
+
+function hasPin(){
+  return !!store.get('pin');
+}
+
+// ============================================================
+// CACHE OFFLINE
+// ============================================================
 function cacheOps(o){ store.set('ops', o) }
 function getCachedOps(){ return store.get('ops') || [] }
 function cacheProfile(p){ store.set('profile', p) }
 function getCachedProfile(){ return store.get('profile') }
 
+// ============================================================
+// ETAT GLOBAL
+// ============================================================
 var session = null;
 var profile = null;
 var ops = [];
 var activeTab = 'user';
 var isLocked = false;
-var pinValue = '';
 var pinStep = 1;
 var pinFirst = '';
-var lockValue = '';
+var pinValue = '';
 var lockAttempts = 0;
-</script>
-// ============================================================
+  // ============================================================
 // RENDER : AUTH
 // ============================================================
 function renderAuth(){
@@ -185,47 +219,47 @@ function renderAuth(){
 }
 
 // ============================================================
-// RENDER : SETUP PIN (creation)
+// RENDER : SETUP PIN
 // ============================================================
 function renderSetupPin(){
   var current = pinStep === 1 ? pinFirst : pinValue;
   var title = pinStep === 1 ? 'Choisissez un code' : 'Confirmez le code';
   app.innerHTML = '<div class="pin-screen">' +
-    '<div style="font-size:36px;margin-bottom:12px">🔐</div>' +
-    '<div class="pin-title">' + title + '</div>' +
-    '<div class="pin-sub">Ce code protège vos données même si le téléphone est perdu.</div>' +
-    '<div class="pin-dots" id="dots"></div>' +
-    '<div class="pin-pad" id="pad"></div>' +
-    '<button class="btn" id="pin-next" style="max-width:280px;margin-top:20px;background:#fff;color:#4f46e5">' + (pinStep === 1 ? 'Suivant' : 'Terminer') + '</button>' +
+    '<div class="pin-inner">' +
+      '<div class="pin-icon">🔐</div>' +
+      '<div class="pin-title">' + title + '</div>' +
+      '<div class="pin-sub">Ce code protège vos données même si le téléphone est perdu.</div>' +
+      '<div class="pin-error" id="setup-error"></div>' +
+      '<input type="tel" id="pin-setup-input" maxlength="6" inputmode="numeric" pattern="[0-9]*" placeholder="••••" class="pin-input">' +
+      '<button class="pin-btn" id="pin-next">' + (pinStep === 1 ? 'Suivant' : 'Terminer') + '</button>' +
+    '</div>' +
   '</div>';
 
-  drawDots(current);
-  drawPinPad(function(k){
-    if (k === 'del') {
-      if (pinStep === 1) pinFirst = pinFirst.slice(0,-1);
-      else pinValue = pinValue.slice(0,-1);
-    } else {
-      if (pinStep === 1) { if (pinFirst.length < 6) pinFirst += k }
-      else { if (pinValue.length < 6) pinValue += k }
-    }
-    var cur = pinStep === 1 ? pinFirst : pinValue;
-    drawDots(cur);
-  });
+  var inp = document.getElementById('pin-setup-input');
+  inp.value = current;
+  inp.oninput = function(){
+    inp.value = inp.value.replace(/\D/g, '').slice(0,6);
+    if (pinStep === 1) pinFirst = inp.value; else pinValue = inp.value;
+  };
 
   document.getElementById('pin-next').onclick = async function(){
+    var val = document.getElementById('pin-setup-input').value;
     if (pinStep === 1) {
-      if (pinFirst.length < 4) { toast('4 chiffres minimum'); return }
+      if (val.length < 4) { document.getElementById('setup-error').textContent = '4 chiffres minimum'; return }
+      pinFirst = val;
       pinStep = 2;
       pinValue = '';
       renderSetupPin();
     } else {
-      if (pinValue !== pinFirst) {
-        toast('Les codes ne correspondent pas');
-        pinStep = 1; pinFirst = ''; pinValue = '';
-        renderSetupPin();
+      if (val !== pinFirst) {
+        document.getElementById('setup-error').textContent = 'Les codes ne correspondent pas';
+        setTimeout(function(){
+          pinStep = 1; pinFirst = ''; pinValue = '';
+          renderSetupPin();
+        }, 1200);
         return;
       }
-      await setPin(pinFirst);
+      await setPin(val);
       pinStep = 1; pinFirst = ''; pinValue = '';
       isLocked = false;
       renderDashboard();
@@ -233,85 +267,66 @@ function renderSetupPin(){
   };
 }
 
-function drawDots(val){
-  var d = document.getElementById('dots');
-  if (!d) return;
-  var html = '';
-  for (var i = 0; i < 6; i++) {
-    var bg = i < val.length ? '#fff' : 'rgba(255,255,255,0.35)';
-    var sc = i < val.length ? 'transform:scale(1.15);' : '';
-    html += '<div style="width:14px;height:14px;border-radius:50%;background:' + bg + ';' + sc + '"></div>';
-  }
-  d.innerHTML = html;
-}
-
-function drawPinPad(onKey){
-  var pad = document.getElementById('pad');
-  if (!pad) return;
-  pad.innerHTML = '';
-  var keys = ['1','2','3','4','5','6','7','8','9','','0','del'];
-  for (var i = 0; i < keys.length; i++) {
-    var k = keys[i];
-    var b = document.createElement('button');
-    b.className = 'pin-key' + (k === '' ? ' empty' : '');
-    b.textContent = k === 'del' ? '⌫' : k;
-    if (k !== '') {
-      (function(key){
-        b.onclick = function(){ onKey(key) };
-      })(k);
-    }
-    pad.appendChild(b);
-  }
-}
-
 // ============================================================
-// RENDER : LOCK SCREEN
+// RENDER : LOCK
 // ============================================================
-function renderLock(){
 function renderLock(){
   isLocked = true;
-  lockValue = '';
-  app.innerHTML = '<div style="position:fixed;top:0;left:0;right:0;bottom:0;background:#4f46e5;color:#fff;padding:24px;z-index:100;overflow-y:auto;font-family:-apple-system,sans-serif">' +
-    '<div style="max-width:320px;margin:60px auto 0;text-align:center">' +
-      '<div style="font-size:48px;margin-bottom:16px">🔒</div>' +
-      '<div style="font-size:20px;font-weight:700;margin-bottom:8px">FamilyFinTracker</div>' +
-      '<div style="font-size:14px;opacity:.75;margin-bottom:32px">Entrez votre code</div>' +
-      '<div id="lock-error" style="color:#fecaca;font-size:13px;margin-bottom:12px;height:18px"></div>' +
-      '<input type="tel" id="pin-input" maxlength="6" inputmode="numeric" pattern="[0-9]*" placeholder="••••" style="width:100%;padding:20px;font-size:32px;text-align:center;letter-spacing:8px;border-radius:16px;border:2px solid rgba(255,255,255,0.5);background:rgba(255,255,255,0.15);color:#fff;font-family:inherit;box-sizing:border-box">' +
-      '<button id="unlock-btn" style="margin-top:20px;width:100%;padding:18px;background:#fff;color:#4f46e5;border:none;border-radius:16px;font-size:16px;font-weight:700;font-family:inherit">Déverrouiller</button>' +
+  lockAttempts = 0;
+  app.innerHTML = '<div class="pin-screen">' +
+    '<div class="pin-inner">' +
+      '<div class="pin-icon">🔒</div>' +
+      '<div class="pin-title">FamilyFinTracker</div>' +
+      '<div class="pin-sub">Entrez votre code</div>' +
+      '<div class="pin-error" id="lock-error"></div>' +
+      '<input type="tel" id="lock-input" maxlength="6" inputmode="numeric" pattern="[0-9]*" placeholder="••••" class="pin-input" autofocus>' +
+      '<button class="pin-btn" id="unlock-btn">Déverrouiller</button>' +
+      '<button class="pin-btn secondary" id="forgot-btn">PIN oublié ?</button>' +
     '</div>' +
   '</div>';
 
-  var input = document.getElementById('pin-input');
-  var btn = document.getElementById('unlock-btn');
-
-  btn.onclick = function(){
-    doUnlock();
+  var inp = document.getElementById('lock-input');
+  inp.value = '';
+  inp.oninput = function(){
+    inp.value = inp.value.replace(/\D/g, '').slice(0,6);
   };
-
-  input.onkeydown = function(e){
+  inp.onkeydown = function(e){
     if (e.key === 'Enter') doUnlock();
   };
 
+  document.getElementById('unlock-btn').onclick = doUnlock;
+
+  document.getElementById('forgot-btn').onclick = function(){
+    if (confirm('Réinitialiser le PIN ? Vous devrez vous reconnecter. Vos opérations sont sauvegardées sur le serveur.')) {
+      store.del('pin');
+      store.del('profile');
+      isLocked = false;
+      session = null;
+      sb.auth.signOut().then(function(){
+        renderAuth();
+      });
+    }
+  };
+
   async function doUnlock(){
-    var val = document.getElementById('pin-input').value;
+    var val = document.getElementById('lock-input').value;
     if (val.length < 4) {
       document.getElementById('lock-error').textContent = '4 chiffres minimum';
       return;
     }
     var ok = await checkPin(val);
     if (ok) {
-      lockValue = '';
       lockAttempts = 0;
       isLocked = false;
       renderDashboard();
     } else {
       lockAttempts++;
       document.getElementById('lock-error').textContent = 'Code incorrect (' + lockAttempts + ')';
-      document.getElementById('pin-input').value = '';
+      document.getElementById('lock-input').value = '';
     }
   }
 }
+
 // ============================================================
 // RENDER : DASHBOARD
 // ============================================================
@@ -325,9 +340,8 @@ function renderDashboard(){
 
   var balance = 0;
   for (var i = 0; i < ops.length; i++) {
-    var o = ops[i];
-    if (o.type === 'deposit') balance += Number(o.amount);
-    else balance -= Number(o.amount);
+    if (ops[i].type === 'deposit') balance += Number(ops[i].amount);
+    else balance -= Number(ops[i].amount);
   }
 
   var tabsHtml = '';
@@ -338,7 +352,7 @@ function renderDashboard(){
     '</div>';
   }
 
-  app.innerHTML = '<div id="dashboard-root">' +
+  app.innerHTML = '<div>' +
     '<header>' +
       '<div class="header-top">' +
         '<div>' +
@@ -448,8 +462,7 @@ async function loadGroupView(){
     area.innerHTML = '<div class="empty">Erreur : ' + escHtml(e.message) + '</div>';
   }
 }
-
-// ============================================================
+  // ============================================================
 // MODAL NOUVELLE OPERATION
 // ============================================================
 function openNewOpModal(){
@@ -466,7 +479,7 @@ function openNewOpModal(){
       '<button class="type-btn" id="type-deposit">Dépôt</button>' +
     '</div>' +
     '<div class="field"><label>Montant (FCFA)</label><input type="number" step="1" id="op-amount" placeholder="0"></div>' +
-    '<div class="field"><label>Description</label><input type="text" id="op-desc" placeholder="Courses, argent de poche..."></div>' +
+    '<div class="field"><label>Description</label><input type="text" id="op-desc" placeholder="Courses, cotisation..."></div>' +
     '<div class="field"><label>Date</label><input type="date" id="op-date" value="' + today() + '"></div>' +
     '<button class="btn" id="op-save" style="margin-top:8px">Valider</button>' +
   '</div>';
@@ -555,6 +568,16 @@ async function syncNow(){
 // DEMARRAGE
 // ============================================================
 async function boot(){
+  // RESET D'URGENCE via URL ?reset=1
+  if (window.location.search.indexOf('reset=1') !== -1) {
+    try { localStorage.removeItem('fft_pin') } catch(e){}
+    try { localStorage.removeItem('fft_profile') } catch(e){}
+    try { localStorage.removeItem('fft_ops') } catch(e){}
+    try { await sb.auth.signOut() } catch(e){}
+    window.location.href = window.location.pathname;
+    return;
+  }
+
   profile = getCachedProfile();
   ops = getCachedOps();
 
@@ -588,10 +611,6 @@ async function boot(){
 }
 
 boot();
-
-// Service Worker désactivé pour éviter les problèmes de cache
-if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.getRegistrations().then(function(regs){
-    for (var i = 0; i < regs.length; i++) { regs[i].unregister() }
-  });
-}
+</script>
+</body>
+</html>
