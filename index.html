@@ -271,63 +271,47 @@ function renderLock(){
 function renderLock(){
   isLocked = true;
   lockValue = '';
-
-  app.innerHTML = '<div style="position:fixed;top:0;left:0;right:0;bottom:0;background:#4f46e5;color:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px;z-index:100;overflow-y:auto">' +
-    '<div style="font-size:36px;margin-bottom:12px">🔒</div>' +
-    '<div style="font-size:18px;font-weight:700;text-align:center;margin-bottom:8px">FamilyFinTracker</div>' +
-    '<div style="font-size:13px;opacity:.75;text-align:center;margin-bottom:20px">Entrez votre code</div>' +
-    '<div id="dots" style="display:flex;gap:12px;margin:0 0 24px 0"></div>' +
-    '<div id="lock-error" style="color:#fecaca;font-size:13px;margin-bottom:16px;min-height:18px"></div>' +
-    '<div id="pad" style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;width:100%;max-width:280px"></div>' +
+  app.innerHTML = '<div style="position:fixed;top:0;left:0;right:0;bottom:0;background:#4f46e5;color:#fff;padding:24px;z-index:100;overflow-y:auto;font-family:-apple-system,sans-serif">' +
+    '<div style="max-width:320px;margin:60px auto 0;text-align:center">' +
+      '<div style="font-size:48px;margin-bottom:16px">🔒</div>' +
+      '<div style="font-size:20px;font-weight:700;margin-bottom:8px">FamilyFinTracker</div>' +
+      '<div style="font-size:14px;opacity:.75;margin-bottom:32px">Entrez votre code</div>' +
+      '<div id="lock-error" style="color:#fecaca;font-size:13px;margin-bottom:12px;height:18px"></div>' +
+      '<input type="tel" id="pin-input" maxlength="6" inputmode="numeric" pattern="[0-9]*" placeholder="••••" style="width:100%;padding:20px;font-size:32px;text-align:center;letter-spacing:8px;border-radius:16px;border:2px solid rgba(255,255,255,0.5);background:rgba(255,255,255,0.15);color:#fff;font-family:inherit;box-sizing:border-box">' +
+      '<button id="unlock-btn" style="margin-top:20px;width:100%;padding:18px;background:#fff;color:#4f46e5;border:none;border-radius:16px;font-size:16px;font-weight:700;font-family:inherit">Déverrouiller</button>' +
+    '</div>' +
   '</div>';
 
-  drawDots(lockValue);
+  var input = document.getElementById('pin-input');
+  var btn = document.getElementById('unlock-btn');
 
-  var pad = document.getElementById('pad');
-  if (!pad) return;
+  btn.onclick = function(){
+    doUnlock();
+  };
 
-  var keys = ['1','2','3','4','5','6','7','8','9','','0','del'];
-  for (var i = 0; i < keys.length; i++) {
-    (function(k){
-      var b = document.createElement('button');
-      if (k === '') {
-        b.style.cssText = 'height:70px;background:transparent;border:none;visibility:hidden';
-        b.textContent = '';
-      } else {
-        b.style.cssText = 'height:70px;background:rgba(255,255,255,0.12);border:none;color:#fff;font-size:24px;font-weight:700;border-radius:16px;cursor:pointer;font-family:inherit';
-        b.textContent = k === 'del' ? '⌫' : k;
+  input.onkeydown = function(e){
+    if (e.key === 'Enter') doUnlock();
+  };
 
-        b.onclick = async function(){
-          if (k === 'del') {
-            lockValue = lockValue.slice(0,-1);
-            drawDots(lockValue);
-            return;
-          }
-          if (lockValue.length >= 6) return;
-          lockValue += k;
-          drawDots(lockValue);
-          if (lockValue.length >= 4) {
-            var ok = await checkPin(lockValue);
-            if (ok) {
-              lockValue = '';
-              lockAttempts = 0;
-              isLocked = false;
-              renderDashboard();
-            } else if (lockValue.length === 6) {
-              lockAttempts++;
-              var errEl = document.getElementById('lock-error');
-              if (errEl) errEl.textContent = 'Code incorrect (' + lockAttempts + ')';
-              lockValue = '';
-              drawDots(lockValue);
-            }
-          }
-        };
-      }
-      pad.appendChild(b);
-    })(keys[i]);
+  async function doUnlock(){
+    var val = document.getElementById('pin-input').value;
+    if (val.length < 4) {
+      document.getElementById('lock-error').textContent = '4 chiffres minimum';
+      return;
+    }
+    var ok = await checkPin(val);
+    if (ok) {
+      lockValue = '';
+      lockAttempts = 0;
+      isLocked = false;
+      renderDashboard();
+    } else {
+      lockAttempts++;
+      document.getElementById('lock-error').textContent = 'Code incorrect (' + lockAttempts + ')';
+      document.getElementById('pin-input').value = '';
+    }
   }
 }
-
 // ============================================================
 // RENDER : DASHBOARD
 // ============================================================
