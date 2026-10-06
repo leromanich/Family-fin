@@ -605,11 +605,9 @@ async function boot(){
 
 boot();
 
+// Service Worker désactivé pour éviter les problèmes de cache
 if ('serviceWorker' in navigator) {
-  window.addEventListener('load', function(){
-    navigator.serviceWorker.register('./sw.js').catch(function(){});
+  navigator.serviceWorker.getRegistrations().then(function(regs){
+    for (var i = 0; i < regs.length; i++) { regs[i].unregister() }
   });
 }
-</script>
-</body>
-</html>
